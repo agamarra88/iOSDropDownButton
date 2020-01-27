@@ -17,6 +17,8 @@
 		690F149D23DD63970040E9BA /* AccountCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 690F149C23DD63970040E9BA /* AccountCell.xib */; };
 		690F149F23DD63A40040E9BA /* AccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690F149E23DD63A40040E9BA /* AccountCell.swift */; };
 		690F14A223DD81A10040E9BA /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690F14A123DD81A10040E9BA /* Account.swift */; };
+		697CA36B23DE6A0F003355F8 /* DropDownTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */; };
+		697CA36F23DE6AC7003355F8 /* DropDownDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		690F149C23DD63970040E9BA /* AccountCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountCell.xib; sourceTree = "<group>"; };
 		690F149E23DD63A40040E9BA /* AccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCell.swift; sourceTree = "<group>"; };
 		690F14A123DD81A10040E9BA /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownTableView.swift; sourceTree = "<group>"; };
+		697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownDefinitions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +93,7 @@
 		690F149823DC7B980040E9BA /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
-				690F149923DC7BBD0040E9BA /* DropDownButton.swift */,
+				697CA36923DE69DA003355F8 /* DropDownButton */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -109,6 +113,16 @@
 				690F14A123DD81A10040E9BA /* Account.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		697CA36923DE69DA003355F8 /* DropDownButton */ = {
+			isa = PBXGroup;
+			children = (
+				690F149923DC7BBD0040E9BA /* DropDownButton.swift */,
+				697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */,
+				697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */,
+			);
+			path = DropDownButton;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,8 +198,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				690F149A23DC7BBD0040E9BA /* DropDownButton.swift in Sources */,
+				697CA36F23DE6AC7003355F8 /* DropDownDefinitions.swift in Sources */,
 				690F149F23DD63A40040E9BA /* AccountCell.swift in Sources */,
 				690F148823DC0FD70040E9BA /* ViewController.swift in Sources */,
+				697CA36B23DE6A0F003355F8 /* DropDownTableView.swift in Sources */,
 				690F148423DC0FD70040E9BA /* AppDelegate.swift in Sources */,
 				690F148623DC0FD70040E9BA /* SceneDelegate.swift in Sources */,
 				690F14A223DD81A10040E9BA /* Account.swift in Sources */,

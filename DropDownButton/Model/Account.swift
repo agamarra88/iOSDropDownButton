@@ -28,4 +28,8 @@ class Account: DropDownItemable {
         self.amount = amount
     }
     
+    func isEqual(to other: DropDownItemable) -> Bool {
+        guard let account = other as? Account else { return false}
+        return number == account.number
+    }
 }
