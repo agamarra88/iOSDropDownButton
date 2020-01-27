@@ -28,6 +28,13 @@ extension DropDownButtonDelegate {
     
 }
 
+enum DropDownDirection {
+    
+    case up
+    case down
+    
+}
+
 @IBDesignable class DropDownButton: UIButton {
     
     // MARK: - Constants
@@ -59,8 +66,8 @@ extension DropDownButtonDelegate {
     // MARK: - Properties
     private var dropDownViewHeightConstraint: NSLayoutConstraint?
     private var placeholder: String = ""
+    private var openDirection: DropDownDirection = .down
     private var whenOpenScrollToSelection:Bool = false
-    private var isOpenDirectionDown: Bool = true
     private(set)var isOpen: Bool = false {
         didSet {
             let image = isOpen ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
@@ -175,9 +182,9 @@ extension DropDownButtonDelegate {
         superView.addSubview(dropDownView)
         
         // Define DropDown direction
-        isOpenDirectionDown = validateIfOpenDirectionIsDown(inSuperView: superView)
+        openDirection = openDirection(inSuperView: superView)
         var verticalConstraint:NSLayoutConstraint
-        if isOpenDirectionDown {
+        if openDirection == .down {
             verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)
         } else {
             verticalConstraint = dropDownView.bottomAnchor.constraint(equalTo: topAnchor, constant: 0)
@@ -190,10 +197,10 @@ extension DropDownButtonDelegate {
                                      dropDownView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
                                      dropDownView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)])
     }
-    
-    private func validateIfOpenDirectionIsDown(inSuperView superView:UIView) -> Bool  {
+
+    private func openDirection(inSuperView superView:UIView) -> DropDownDirection  {
         let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
-        return superView.frame.height > finalHeight
+        return superView.frame.height > finalHeight ? DropDownDirection.down : DropDownDirection.up
     }
     
     // MARK: - Action
@@ -209,7 +216,6 @@ extension DropDownButtonDelegate {
         
         !isOpen ? openDropDown() : closeDropDown()
     }
-    
 }
 
 // MARK: - Public
@@ -240,7 +246,7 @@ extension DropDownButton {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             self.dropDownView.layoutIfNeeded()
             
-            let factor:CGFloat = self.isOpenDirectionDown ? 1 : -1
+            let factor:CGFloat = self.openDirection == .down ? 1 : -1
             self.dropDownView.center.y += factor * self.dropDownView.frame.height / 2
             
         }, completion: { [unowned self] _ in
@@ -259,7 +265,7 @@ extension DropDownButton {
         dropDownViewHeightConstraint?.constant = 0
         delegate?.dropDownButtonWillHideDropDown(self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
-            let factor:CGFloat = self.isOpenDirectionDown ? 1 : -1
+            let factor:CGFloat = self.openDirection == .down ? 1 : -1
             self.dropDownView.center.y -= factor * self.dropDownView.frame.height / 2
             self.dropDownView.layoutIfNeeded()
             
@@ -267,5 +273,5 @@ extension DropDownButton {
             self.delegate?.dropDownButtonDidHideDropDown(self)
         })
     }
-    
+
 }
