@@ -59,7 +59,8 @@ extension DropDownButtonDelegate {
     // MARK: - Properties
     private var dropDownViewHeightConstraint: NSLayoutConstraint?
     private var placeholder: String = ""
-    private var onOpenScrollToSelection:Bool = false
+    private var whenOpenScrollToSelection:Bool = false
+    private var isOpenDirectionDown: Bool = true
     private(set)var isOpen: Bool = false {
         didSet {
             let image = isOpen ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
@@ -86,7 +87,7 @@ extension DropDownButtonDelegate {
                 setTitle(placeholder, for: .normal)
             }
             dropDownView.select(item: selectedElement, animated: false)
-            onOpenScrollToSelection = oldValue == nil
+            whenOpenScrollToSelection = oldValue == nil
         }
     }
     
@@ -169,14 +170,30 @@ extension DropDownButtonDelegate {
     }
     
     private func constraintDropDownView(toSuperView superView:UIView) {
+        // Add DropDownView to the view stack
         dropDownView.translatesAutoresizingMaskIntoConstraints = false
         superView.addSubview(dropDownView)
         
+        // Define DropDown direction
+        isOpenDirectionDown = validateIfOpenDirectionIsDown(inSuperView: superView)
+        var verticalConstraint:NSLayoutConstraint
+        if isOpenDirectionDown {
+            verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+        } else {
+            verticalConstraint = dropDownView.bottomAnchor.constraint(equalTo: topAnchor, constant: 0)
+        }
+        
+        // Add Constratins
         dropDownViewHeightConstraint = dropDownView.heightAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([dropDownViewHeightConstraint!,
+                                     verticalConstraint,
                                      dropDownView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
-                                     dropDownView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-                                     dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)])
+                                     dropDownView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)])
+    }
+    
+    private func validateIfOpenDirectionIsDown(inSuperView superView:UIView) -> Bool  {
+        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
+        return superView.frame.height > finalHeight
     }
     
     // MARK: - Action
@@ -210,7 +227,7 @@ extension DropDownButton {
         isOpen = true
         
         // Scroll to Selected Item
-        if onOpenScrollToSelection {
+        if whenOpenScrollToSelection {
             dropDownView.scrollToSelectedIndex()
         }
         
@@ -222,7 +239,9 @@ extension DropDownButton {
         delegate?.dropDownButtonWillShowDropDown(self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             self.dropDownView.layoutIfNeeded()
-            self.dropDownView.center.y += self.dropDownView.frame.height / 2
+            
+            let factor:CGFloat = self.isOpenDirectionDown ? 1 : -1
+            self.dropDownView.center.y += factor * self.dropDownView.frame.height / 2
             
         }, completion: { [unowned self] _ in
             self.delegate?.dropDownButtonDidShowDropDown(self)
@@ -231,7 +250,7 @@ extension DropDownButton {
     
     func closeDropDown() {
         isOpen = false
-        onOpenScrollToSelection = false
+        whenOpenScrollToSelection = false
         
         // Manage corners
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
@@ -240,7 +259,8 @@ extension DropDownButton {
         dropDownViewHeightConstraint?.constant = 0
         delegate?.dropDownButtonWillHideDropDown(self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
-            self.dropDownView.center.y -= self.dropDownView.frame.height / 2
+            let factor:CGFloat = self.isOpenDirectionDown ? 1 : -1
+            self.dropDownView.center.y -= factor * self.dropDownView.frame.height / 2
             self.dropDownView.layoutIfNeeded()
             
         }, completion: { [unowned self] _ in

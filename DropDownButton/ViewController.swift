@@ -30,7 +30,6 @@ class ViewController: UIViewController {
         
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDownButton2.selectedItemAction = { [unowned self] (item, _) in
-            self.dropDownButton.selectedElement = nil
             print(item)
         }
     }
