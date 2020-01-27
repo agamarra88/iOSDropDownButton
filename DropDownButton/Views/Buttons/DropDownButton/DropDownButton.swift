@@ -64,6 +64,7 @@ enum DropDownDirection {
     }
     
     // MARK: - Properties
+    private var backgroundTapGesture: UITapGestureRecognizer?
     private var dropDownViewHeightConstraint: NSLayoutConstraint?
     private var placeholder: String = ""
     private var openDirection: DropDownDirection = .down
@@ -72,6 +73,8 @@ enum DropDownDirection {
         didSet {
             let image = isOpen ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
             arrowImageView.image = image
+            
+            backgroundTapGesture?.isEnabled = isOpen
         }
     }
     
@@ -166,6 +169,7 @@ enum DropDownDirection {
         if let currentSuperView = superview {
             let parentView = bestSuperViewForDropDown(fromView: currentSuperView)
             constraintDropDownView(toSuperView: parentView)
+            registerdDismissGesture(toSuperView: parentView)
         }
         
         dropDownView.elements = elements
@@ -175,6 +179,21 @@ enum DropDownDirection {
             self.delegate?.dropDownButton(self, didSelectItem: item, atIndex: index)
             self.closeDropDown()
         }
+    }
+    private func canShowDropDown(inSuperView superView:UIView) -> Bool {
+        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
+        return superView.frame.height > finalHeight
+    }
+    
+    private func bestSuperViewForDropDown(fromView view:UIView) -> UIView {
+        var parentView = view
+        while !canShowDropDown(inSuperView: parentView) {
+            guard let superview = parentView.superview else {
+                return parentView
+            }
+            parentView = superview
+        }
+        return parentView
     }
     
     private func constraintDropDownView(toSuperView superView:UIView) {
@@ -199,20 +218,21 @@ enum DropDownDirection {
                                      dropDownView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)])
     }
     
-    private func canShowDropDown(inSuperView superView:UIView) -> Bool {
-        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
-        return superView.frame.height > finalHeight
-    }
-    
-    private func bestSuperViewForDropDown(fromView view:UIView) -> UIView {
-        var parentView = view
-        while !canShowDropDown(inSuperView: parentView) {
-            guard let superview = parentView.superview else {
-                return parentView
+    private func registerdDismissGesture(toSuperView superView:UIView) {
+        if backgroundTapGesture == nil {
+            
+            // Finding the best superview for the dissmiss gesture
+            var parentView:UIView? = superView
+            while !(parentView is UIScrollView) && parentView?.superview != nil {
+                parentView = parentView?.superview
             }
-            parentView = superview
+            
+            // Register gesture
+            backgroundTapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped(_:)))
+            backgroundTapGesture?.delegate = self
+            parentView?.isUserInteractionEnabled = true
+            parentView?.addGestureRecognizer(backgroundTapGesture!)
         }
-        return parentView
     }
     
     // MARK: - Action
@@ -222,12 +242,19 @@ enum DropDownDirection {
             let currentSuperView = superview {
             let parentView = bestSuperViewForDropDown(fromView: currentSuperView)
             constraintDropDownView(toSuperView: parentView)
+            registerdDismissGesture(toSuperView: parentView)
             
             // Forcing the layout because then an animation will come. With this the view will be located in the right place for the animation
             dropDownView.layoutIfNeeded()
         }
         
         !isOpen ? openDropDown() : closeDropDown()
+    }
+    
+    @IBAction private func backgroundTapped(_ recognizer:UITapGestureRecognizer) {
+        if isOpen {
+            closeDropDown()
+        }
     }
 }
 
@@ -287,4 +314,28 @@ extension DropDownButton {
         })
     }
 
+}
+
+extension DropDownButton: UIGestureRecognizerDelegate {
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        let isInDropDown = isTouch(touch, inView: dropDownView)
+        let isInSelf = isTouch(touch, inView: self)
+        return !isInDropDown && !isInSelf
+    }
+    
+    private func isTouch(_ touch:UITouch, inView view:UIView) -> Bool {
+        let location = touch.location(in: view)
+        let inXAxis = view.bounds.origin.x <= location.x && location.x <= view.bounds.width
+        let inYAxis = view.bounds.origin.y <= location.y && location.y <= view.bounds.height
+        return inXAxis && inYAxis
+    }
 }
