@@ -14,8 +14,8 @@ protocol DropDownButtonDelegate:class {
     
     func dropDownButtonWillShowDropDown(_ sender:DropDownButton)
     func dropDownButtonDidShowDropDown(_ sender:DropDownButton)
-    func dropDownButtonWillHideDropDown(_ sender:DropDownButton)
-    func dropDownButtonDidHideDropDown(_ sender:DropDownButton)
+    func dropDownButtonWillDismissDropDown(_ sender:DropDownButton)
+    func dropDownButtonDidDismissDropDown(_ sender:DropDownButton)
     
 }
 
@@ -23,8 +23,8 @@ extension DropDownButtonDelegate {
     
     func dropDownButtonWillShowDropDown(_ sender:DropDownButton) {}
     func dropDownButtonDidShowDropDown(_ sender:DropDownButton) {}
-    func dropDownButtonWillHideDropDown(_ sender:DropDownButton) {}
-    func dropDownButtonDidHideDropDown(_ sender:DropDownButton) {}
+    func dropDownButtonWillDismissDropDown(_ sender:DropDownButton) {}
+    func dropDownButtonDidDismissDropDown(_ sender:DropDownButton) {}
     
 }
 
@@ -32,6 +32,14 @@ enum DropDownDirection {
     
     case up
     case down
+    
+}
+
+enum DropDownDismissOption {
+    
+    case automatic  // No tap is needed to dismiss the drop down. As soon as the user interact with anything else than the drop down, the drop down is dismissed
+    case onTap      // A tap inseide the drop down is needed to dismiss it
+    case manual     // The drop down can only be dismissed manually (by code)
     
 }
 
@@ -45,6 +53,22 @@ enum DropDownDirection {
         didSet {
             layer.cornerRadius = cornerRadius
             dropDownView.layer.cornerRadius = cornerRadius
+        }
+    }
+    @IBInspectable var borderWidth: CGFloat = 0 {
+        willSet {
+            dropDownBorderWidth = newValue
+        }
+        didSet {
+            layer.borderWidth = borderWidth
+        }
+    }
+    @IBInspectable var borderColor: UIColor = .clear {
+        willSet {
+            dropDownBorderColor = newValue
+        }
+        didSet {
+            layer.borderColor = borderColor.cgColor
         }
     }
     @IBInspectable var dropDownBorderWidth: CGFloat = 1 {
@@ -62,19 +86,20 @@ enum DropDownDirection {
             dropDownView.separatorStyle = separatorStyle
         }
     }
+    var dismissOption:DropDownDismissOption = .automatic
     
     // MARK: - Properties
     private var backgroundTapGesture: UITapGestureRecognizer?
     private var dropDownViewHeightConstraint: NSLayoutConstraint?
     private var placeholder: String = ""
-    private var openDirection: DropDownDirection = .down
-    private var whenOpenScrollToSelection:Bool = false
-    private(set)var isOpen: Bool = false {
+    private var showDirection: DropDownDirection = .down
+    private var whenShowScrollToSelection:Bool = false
+    private(set)var isShowing: Bool = false {
         didSet {
-            let image = isOpen ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
+            let image = isShowing ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
             arrowImageView.image = image
             
-            backgroundTapGesture?.isEnabled = isOpen
+            backgroundTapGesture?.isEnabled = isShowing
         }
     }
     
@@ -97,7 +122,7 @@ enum DropDownDirection {
                 setTitle(placeholder, for: .normal)
             }
             dropDownView.select(item: selectedElement, animated: false)
-            whenOpenScrollToSelection = oldValue == nil
+            whenShowScrollToSelection = oldValue == nil
         }
     }
     
@@ -129,6 +154,8 @@ enum DropDownDirection {
         
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
+        layer.borderWidth = borderWidth
+        layer.borderColor = borderColor.cgColor
         addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
     }
     
@@ -177,7 +204,10 @@ enum DropDownDirection {
             self.selectedElement = item
             self.selectedItemAction?(item, index)
             self.delegate?.dropDownButton(self, didSelectItem: item, atIndex: index)
-            self.closeDropDown()
+            
+            if self.dismissOption != .manual {
+                self.dismissDropDown()
+            }
         }
     }
     private func canShowDropDown(inSuperView superView:UIView) -> Bool {
@@ -202,9 +232,9 @@ enum DropDownDirection {
         superView.addSubview(dropDownView)
         
         // Define DropDown direction
-        openDirection = canShowDropDown(inSuperView: superView) ? DropDownDirection.down : DropDownDirection.up
+        showDirection = canShowDropDown(inSuperView: superView) ? DropDownDirection.down : DropDownDirection.up
         var verticalConstraint:NSLayoutConstraint
-        if openDirection == .down {
+        if showDirection == .down {
             verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)
         } else {
             verticalConstraint = dropDownView.bottomAnchor.constraint(equalTo: topAnchor, constant: 0)
@@ -248,12 +278,19 @@ enum DropDownDirection {
             dropDownView.layoutIfNeeded()
         }
         
-        !isOpen ? openDropDown() : closeDropDown()
+        if !isShowing {
+            showDropDown()
+        } else {
+            // If dissmis option is manual do not dismiss
+            if dismissOption != .manual {
+                dismissDropDown()
+            }
+        }
     }
     
     @IBAction private func backgroundTapped(_ recognizer:UITapGestureRecognizer) {
-        if isOpen {
-            closeDropDown()
+        if isShowing && dismissOption == .automatic {
+            dismissDropDown()
         }
     }
 }
@@ -269,11 +306,11 @@ extension DropDownButton {
         dropDownView.registerReusable(cell: cellClass, withRowHeight: rowHeight, estimatedRowHeight: estimatedRowHeight)
     }
     
-    func openDropDown() {
-        isOpen = true
+    func showDropDown() {
+        isShowing = true
         
         // Scroll to Selected Item
-        if whenOpenScrollToSelection {
+        if whenShowScrollToSelection {
             dropDownView.scrollToSelectedIndex()
         }
         
@@ -286,7 +323,7 @@ extension DropDownButton {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             self.dropDownView.layoutIfNeeded()
             
-            let factor:CGFloat = self.openDirection == .down ? 1 : -1
+            let factor:CGFloat = self.showDirection == .down ? 1 : -1
             self.dropDownView.center.y += factor * self.dropDownView.frame.height / 2
             
         }, completion: { [unowned self] _ in
@@ -294,28 +331,29 @@ extension DropDownButton {
         })
     }
     
-    func closeDropDown() {
-        isOpen = false
-        whenOpenScrollToSelection = false
+    func dismissDropDown() {
+        isShowing = false
+        whenShowScrollToSelection = false
         
         // Manage corners
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
         // Animate and hide DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = 0
-        delegate?.dropDownButtonWillHideDropDown(self)
+        delegate?.dropDownButtonWillDismissDropDown(self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
-            let factor:CGFloat = self.openDirection == .down ? 1 : -1
+            let factor:CGFloat = self.showDirection == .down ? 1 : -1
             self.dropDownView.center.y -= factor * self.dropDownView.frame.height / 2
             self.dropDownView.layoutIfNeeded()
             
         }, completion: { [unowned self] _ in
-            self.delegate?.dropDownButtonDidHideDropDown(self)
+            self.delegate?.dropDownButtonDidDismissDropDown(self)
         })
     }
 
 }
 
+// MARK: - UIGestureRecognizerDelegate
 extension DropDownButton: UIGestureRecognizerDelegate {
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

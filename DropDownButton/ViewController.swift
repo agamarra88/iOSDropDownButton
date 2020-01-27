@@ -27,7 +27,6 @@ class ViewController: UIViewController {
         dropDownButton.selectedElement = accounts[2]
         dropDownButton.delegate = self
         
-        
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDownButton2.selectedItemAction = { (item, _) in
             print(item)
