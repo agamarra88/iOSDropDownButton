@@ -52,7 +52,7 @@ enum DropDownDismissOption {
     @IBInspectable var cornerRadius: CGFloat = 0 {
         didSet {
             layer.cornerRadius = cornerRadius
-            dropDownView.layer.cornerRadius = cornerRadius
+            dropDownView.cornerRadius = cornerRadius
         }
     }
     @IBInspectable var borderWidth: CGFloat = 0 {
@@ -73,12 +73,32 @@ enum DropDownDismissOption {
     }
     @IBInspectable var dropDownBorderWidth: CGFloat = 1 {
         didSet {
-            dropDownView.layer.borderWidth = dropDownBorderWidth
+            dropDownView.borderWidth = dropDownBorderWidth
         }
     }
     @IBInspectable var dropDownBorderColor: UIColor = .lightGray {
         didSet {
-            dropDownView.layer.borderColor = dropDownBorderColor.cgColor
+            dropDownView.borderColor = dropDownBorderColor
+        }
+    }
+    @IBInspectable var shadowColor: UIColor = .clear {
+        didSet {
+            dropDownView.shadowColor = shadowColor
+        }
+    }
+    @IBInspectable var shadowOpacity: CGFloat = 0 {
+        didSet {
+            dropDownView.shadowOpacity = shadowOpacity
+        }
+    }
+    @IBInspectable var shadowOffset: CGSize = .zero {
+        didSet {
+            dropDownView.shadowOffset = shadowOffset
+        }
+    }
+    @IBInspectable var shadowRadius:CGFloat = 0 {
+        didSet {
+            dropDownView.shadowRadius = shadowRadius
         }
     }
     var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
@@ -186,11 +206,13 @@ enum DropDownDismissOption {
     
     private func setupDropDownView() {
         dropDownView = DropDownTableView()
-        dropDownView.clipsToBounds = true
-        dropDownView.layer.cornerRadius = cornerRadius
-        dropDownView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        dropDownView.layer.borderWidth = dropDownBorderWidth
-        dropDownView.layer.borderColor = dropDownBorderColor.cgColor
+        dropDownView.cornerRadius = cornerRadius
+        dropDownView.borderWidth = dropDownBorderWidth
+        dropDownView.borderColor = dropDownBorderColor
+        dropDownView.shadowColor = shadowColor
+        dropDownView.shadowOpacity = shadowOpacity
+        dropDownView.shadowOffset = shadowOffset
+        dropDownView.shadowRadius = shadowRadius
         dropDownView.separatorStyle = separatorStyle
         
         if let currentSuperView = superview {

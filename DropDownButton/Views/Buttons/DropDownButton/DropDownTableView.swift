@@ -14,9 +14,44 @@ class DropDownTableView: UIView {
     private let cellIdentifier = "DropDownCellIdentifier"
     
     // MARK: - Properties - Inspectables / Configuration
+    var cornerRadius: CGFloat = 0 {
+        didSet {
+            tableView.layer.cornerRadius = cornerRadius
+        }
+    }
+    var borderWidth: CGFloat = 0 {
+        didSet {
+            tableView.layer.borderWidth = borderWidth
+        }
+    }
+    var borderColor: UIColor = .clear {
+        didSet {
+            tableView.layer.borderColor = borderColor.cgColor
+        }
+    }
     var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             tableView.separatorStyle = separatorStyle
+        }
+    }
+    var shadowColor: UIColor = .clear {
+        didSet {
+            layer.shadowColor = shadowColor.cgColor
+        }
+    }
+    var shadowOpacity: CGFloat = 0 {
+        didSet {
+            layer.shadowOpacity = Float(shadowOpacity)
+        }
+    }
+    var shadowOffset: CGSize = .zero {
+        didSet {
+            layer.shadowOffset = shadowOffset
+        }
+    }
+    var shadowRadius:CGFloat = 0 {
+        didSet {
+            layer.shadowRadius = shadowRadius
         }
     }
     
@@ -29,15 +64,27 @@ class DropDownTableView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        setupTableView()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
+        setupTableView()
     }
     
     // MARK: - Private
     private func setupView() {
+        backgroundColor = .clear
+        layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        layer.shadowColor = shadowColor.cgColor
+        layer.shadowOpacity = Float(shadowOpacity)
+        layer.shadowOffset = shadowOffset
+        layer.shadowRadius = shadowRadius
+    }
+    
+    private func setupTableView() {
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.clipsToBounds = true
@@ -45,6 +92,7 @@ class DropDownTableView: UIView {
         tableView.allowsMultipleSelection = false
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
         addSubview(tableView)
         NSLayoutConstraint.activate([tableView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
