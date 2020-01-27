@@ -71,12 +71,12 @@ enum DropDownDismissOption {
             layer.borderColor = borderColor.cgColor
         }
     }
-    @IBInspectable var dropDownBorderWidth: CGFloat = 1 {
+    @IBInspectable var dropDownBorderWidth: CGFloat = 0 {
         didSet {
             dropDownView.borderWidth = dropDownBorderWidth
         }
     }
-    @IBInspectable var dropDownBorderColor: UIColor = .lightGray {
+    @IBInspectable var dropDownBorderColor: UIColor = .clear {
         didSet {
             dropDownView.borderColor = dropDownBorderColor
         }
