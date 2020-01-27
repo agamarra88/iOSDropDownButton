@@ -11,6 +11,21 @@ import Foundation
 // MARK: - Definitions
 typealias dropDownSelectedItemAction = (DropDownItemable, Int) -> Void
 
+enum DropDownDirection {
+    
+    case up
+    case down
+    
+}
+
+enum DropDownDismissOption {
+    
+    case automatic  // No tap is needed to dismiss the drop down. As soon as the user interact with anything else than the drop down, the drop down is dismissed
+    case onTap      // A tap inseide the drop down is needed to dismiss it
+    case manual     // The drop down can only be dismissed manually (by code)
+    
+}
+
 // MARK: - DropDownItemable
 protocol DropDownItemable: CustomStringConvertible {
     
