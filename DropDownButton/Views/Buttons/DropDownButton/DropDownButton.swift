@@ -164,7 +164,8 @@ enum DropDownDirection {
         dropDownView.separatorStyle = separatorStyle
         
         if let currentSuperView = superview {
-            constraintDropDownView(toSuperView: currentSuperView)
+            let parentView = bestSuperViewForDropDown(fromView: currentSuperView)
+            constraintDropDownView(toSuperView: parentView)
         }
         
         dropDownView.elements = elements
@@ -182,7 +183,7 @@ enum DropDownDirection {
         superView.addSubview(dropDownView)
         
         // Define DropDown direction
-        openDirection = openDirection(inSuperView: superView)
+        openDirection = canShowDropDown(inSuperView: superView) ? DropDownDirection.down : DropDownDirection.up
         var verticalConstraint:NSLayoutConstraint
         if openDirection == .down {
             verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)
@@ -197,10 +198,21 @@ enum DropDownDirection {
                                      dropDownView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
                                      dropDownView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)])
     }
-
-    private func openDirection(inSuperView superView:UIView) -> DropDownDirection  {
+    
+    private func canShowDropDown(inSuperView superView:UIView) -> Bool {
         let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
-        return superView.frame.height > finalHeight ? DropDownDirection.down : DropDownDirection.up
+        return superView.frame.height > finalHeight
+    }
+    
+    private func bestSuperViewForDropDown(fromView view:UIView) -> UIView {
+        var parentView = view
+        while !canShowDropDown(inSuperView: parentView) {
+            guard let superview = parentView.superview else {
+                return parentView
+            }
+            parentView = superview
+        }
+        return parentView
     }
     
     // MARK: - Action
@@ -208,7 +220,8 @@ enum DropDownDirection {
         // Add constraints if needed
         if dropDownViewHeightConstraint == nil,
             let currentSuperView = superview {
-            constraintDropDownView(toSuperView: currentSuperView)
+            let parentView = bestSuperViewForDropDown(fromView: currentSuperView)
+            constraintDropDownView(toSuperView: parentView)
             
             // Forcing the layout because then an animation will come. With this the view will be located in the right place for the animation
             dropDownView.layoutIfNeeded()
