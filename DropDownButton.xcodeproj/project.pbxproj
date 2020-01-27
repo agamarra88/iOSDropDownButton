@@ -74,7 +74,6 @@
 				690F148523DC0FD70040E9BA /* SceneDelegate.swift */,
 				690F148723DC0FD70040E9BA /* ViewController.swift */,
 				690F148923DC0FD70040E9BA /* Main.storyboard */,
-				690F148C23DC0FD90040E9BA /* Assets.xcassets */,
 				690F148E23DC0FD90040E9BA /* LaunchScreen.storyboard */,
 				690F149123DC0FD90040E9BA /* Info.plist */,
 			);
@@ -121,6 +120,7 @@
 				690F149923DC7BBD0040E9BA /* DropDownButton.swift */,
 				697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */,
 				697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */,
+				690F148C23DC0FD90040E9BA /* Assets.xcassets */,
 			);
 			path = DropDownButton;
 			sourceTree = "<group>";

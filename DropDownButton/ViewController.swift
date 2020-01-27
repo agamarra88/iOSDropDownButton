@@ -21,14 +21,25 @@ class ViewController: UIViewController {
                         Account(name: "Fabiola Chumpitaz", number: "7654321890", amount: 12000)]
         
         let nib = UINib(nibName: "AccountCell", bundle: Bundle.main)
-        dropDownButton.registerReusable(nibCell: nib)
+        dropDownButton.registerReusable(nibCell: nib, withRowHeight: 80)
         dropDownButton.separatorStyle = .none
         dropDownButton.elements = accounts
-        //dropDownButton.selectedElement = accounts[2]
+        dropDownButton.selectedElement = accounts[2]
+        dropDownButton.delegate = self
+        
         
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
+        dropDownButton2.selectedItemAction = { [unowned self] (item, _) in
+            self.dropDownButton.selectedElement = nil
+            print(item)
+        }
     }
-
-
 }
 
+extension ViewController:DropDownButtonDelegate {
+    
+    func dropDownButton(_ sender: DropDownButton, didSelectItem item: DropDownItemable, atIndex index: Int) {
+        print(item)
+    }
+    
+}

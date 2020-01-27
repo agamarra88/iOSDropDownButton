@@ -88,6 +88,9 @@ extension DropDownTableView {
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 tableView.deselectRow(at: selectedIndex, animated: animated)
             }
+            
+            let indexPath = IndexPath(row: 0, section: 0)
+            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
         }
     }
     

@@ -40,6 +40,16 @@ extension DropDownButtonDelegate {
             dropDownView.layer.cornerRadius = cornerRadius
         }
     }
+    @IBInspectable var dropDownBorderWidth: CGFloat = 1 {
+        didSet {
+            dropDownView.layer.borderWidth = dropDownBorderWidth
+        }
+    }
+    @IBInspectable var dropDownBorderColor: UIColor = .lightGray {
+        didSet {
+            dropDownView.layer.borderColor = dropDownBorderColor.cgColor
+        }
+    }
     var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             dropDownView.separatorStyle = separatorStyle
@@ -50,12 +60,18 @@ extension DropDownButtonDelegate {
     private var dropDownViewHeightConstraint: NSLayoutConstraint?
     private var placeholder: String = ""
     private var onOpenScrollToSelection:Bool = false
-    private(set)var isOpen: Bool = false
+    private(set)var isOpen: Bool = false {
+        didSet {
+            let image = isOpen ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
+            arrowImageView.image = image
+        }
+    }
     
     weak var delegate:DropDownButtonDelegate?
     var selectedItemAction: dropDownSelectedItemAction?
     
     var dropDownView: DropDownTableView!
+    var arrowImageView: UIImageView!
     var elements: [DropDownItemable] = [] {
         didSet {
             dropDownView.elements = elements
@@ -77,29 +93,57 @@ extension DropDownButtonDelegate {
     // MARK: - Calculated Properties
     private var dropDownViewHeight:CGFloat {
         let factor = elements.count < numberOfRowsToShow ? elements.count : numberOfRowsToShow
-        return CGFloat(factor) * dropDownView.tableView.estimatedRowHeight // TODO: Improve calculation
+        let height = dropDownView.tableView.rowHeight != UITableView.automaticDimension ? dropDownView.tableView.rowHeight : dropDownView.tableView.estimatedRowHeight
+        return CGFloat(factor) * height // TODO: Improve calculation
     }
     
     // MARK: - Constructors
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupButton()
+        setupArrowImage()
         setupDropDownView()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupButton()
+        setupArrowImage()
         setupDropDownView()
     }
     
     // MARK: - Private
     private func setupButton() {
+        placeholder = titleLabel?.text ?? ""
+        
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
         addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+    }
+    
+    private func setupArrowImage() {
+        let imageViewWidth:CGFloat = 40
+        let isRightToLeft = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+        let rightInsents = !isRightToLeft ? imageViewWidth : 0
+        let leftInsents = isRightToLeft ? imageViewWidth : 0
+        titleEdgeInsets = UIEdgeInsets(top: 0, left: leftInsents, bottom: 0, right: rightInsents)
         
-        placeholder = titleLabel?.text ?? ""
+        let image = UIImage(named: "dropDownArrowDown")
+        arrowImageView = UIImageView(image: image)
+        arrowImageView.contentMode = .center
+        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(arrowImageView)
+        
+        var horizontalConstraint:NSLayoutConstraint!
+        if isRightToLeft {
+            horizontalConstraint = arrowImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)
+        } else {
+            horizontalConstraint = arrowImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)
+        }
+        NSLayoutConstraint.activate([horizontalConstraint,
+                                     arrowImageView.widthAnchor.constraint(equalToConstant: imageViewWidth),
+                                     arrowImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+                                     arrowImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)])
     }
     
     private func setupDropDownView() {
@@ -107,6 +151,8 @@ extension DropDownButtonDelegate {
         dropDownView.clipsToBounds = true
         dropDownView.layer.cornerRadius = cornerRadius
         dropDownView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        dropDownView.layer.borderWidth = dropDownBorderWidth
+        dropDownView.layer.borderColor = dropDownBorderColor.cgColor
         dropDownView.separatorStyle = separatorStyle
         
         if let currentSuperView = superview {
@@ -190,6 +236,7 @@ extension DropDownButton {
         // Manage corners
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
+        // Animate and hide DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = 0
         delegate?.dropDownButtonWillHideDropDown(self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
