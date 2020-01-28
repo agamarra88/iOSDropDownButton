@@ -1,14 +1,14 @@
 //
-//  DropDownButton.swift
+//  DropDownView.swift
 //  DropDownButton
 //
-//  Created by Arturo Gamarra on 1/25/20.
+//  Created by Arturo Gamarra on 1/27/20.
 //  Copyright © 2020 Vector. All rights reserved.
 //
 
 import UIKit
 
-@IBDesignable class DropDownButton: UIButton, DropDownViewable {
+@IBDesignable class DropDownView: UIView, DropDownViewable {
     
     // MARK: - Properties - Inspectables & Configuration
     @IBInspectable var cornerRadius: CGFloat = 0 {
@@ -71,7 +71,6 @@ import UIKit
     var dismissOption:DropDownDismissOption = .automatic
     
     // MARK: - Properties
-    private var placeholder: String = ""
     var backgroundTapGesture: UITapClosureGestureRecognizer?
     var dropDownViewHeightConstraint: NSLayoutConstraint?
     var showDirection: DropDownDirection = .down
@@ -94,11 +93,6 @@ import UIKit
     }
     var selectedElement:DropDownItemable? {
         didSet {
-            if let element = selectedElement {
-                setTitle(element.description, for: .normal)
-            } else {
-                setTitle(placeholder, for: .normal)
-            }
             selectedElementchanged(fromOldValue: oldValue)
         }
     }
@@ -108,49 +102,41 @@ import UIKit
         dropDownView = DropDownTableView()
         
         super.init(frame: frame)
-        setupButton()
-        setupArrowImage()
+        setupView()
+        setupArrowImageView()
     }
     
     required init?(coder: NSCoder) {
         dropDownView = DropDownTableView()
         
         super.init(coder: coder)
-        setupButton()
-        setupArrowImage()
-    }
-    
-    // MARK: - Private
-    private func setupButton() {
-        setupDropDownViewable()
-        
-        placeholder = titleLabel?.text ?? ""
-        addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
-    }
-    
-    private func setupArrowImage() {
-        let imageViewWidth = DropDownConstants.imageViewWidth
-        let isRightToLeft = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
-        let rightInsents = !isRightToLeft ? imageViewWidth : 0
-        let leftInsents = isRightToLeft ? imageViewWidth : 0
-        titleEdgeInsets = UIEdgeInsets(top: 0, left: leftInsents, bottom: 0, right: rightInsents)
-        
+        setupView()
         setupArrowImageView()
     }
     
-    // MARK: - Action
-    @IBAction private func buttonTapped(_ sender:DropDownButton) {
-        didTapped()
+    // MARK: - Private
+    private func setupView() {
+        isUserInteractionEnabled = true
+        setupDropDownViewable()
     }
+    
+    // MARK: - Action
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first,
+            !isAnOutside(touch: touch) {
+            didTapped()
+        }
+    }
+
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension DropDownButton: UIGestureRecognizerDelegate {
+extension DropDownView: UIGestureRecognizerDelegate {
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
-
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

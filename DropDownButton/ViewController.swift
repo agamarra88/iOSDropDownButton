@@ -12,6 +12,9 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var dropDownButton: DropDownButton!
     @IBOutlet weak var dropDownButton2: DropDownButton!
+    @IBOutlet weak var dropDownView: DropDownView!
+    @IBOutlet weak var accountLabel: UILabel!
+    @IBOutlet weak var amountLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +23,15 @@ class ViewController: UIViewController {
                         Account(name: "Andrea Cano", number: "987654321", amount: 3000),
                         Account(name: "Fabiola Chumpitaz", number: "7654321890", amount: 12000)]
         
-        let nib = UINib(nibName: "AccountCell", bundle: Bundle.main)
+        let nib = UINib(nibName: "AccountCell", bundle: Bundle.main)        
+        dropDownView.registerReusable(nibCell: nib, withRowHeight: 80)
+        dropDownView.elements = accounts
+        dropDownView.selectedItemAction = { [unowned self] (item, _) in
+            guard let account = item as? Account else { return }
+            self.accountLabel.text = account.name
+            self.amountLabel.text = account.amount.description
+        }
+        
         dropDownButton.registerReusable(nibCell: nib, withRowHeight: 80)
         dropDownButton.separatorStyle = .none
         dropDownButton.elements = accounts
