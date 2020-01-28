@@ -47,6 +47,7 @@ protocol DropDownViewable: UIGestureRecognizerDelegate {
     var shadowOpacity: CGFloat { get set }
     var shadowOffset: CGSize { get set }
     var shadowRadius:CGFloat { get set }
+    var dropDownOffset:CGFloat { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
     var dismissOption:DropDownDismissOption { get set }
     
@@ -79,14 +80,18 @@ extension DropDownViewable {
 // MARK: - Internal - For Properties Observers
 extension DropDownViewable {
     
-    func elementsChanged() {
-        dropDownView.elements = elements
-        dropDownView.tableView.reloadData()
+    func dropDownOffsetChanged() {
+        guard let constraints = dropDownView.superview?.constraints else { return }
+        
+        let attribute:NSLayoutConstraint.Attribute = showDirection == .down ? .top : .bottom
+        let verticalConstraint = constraints.first(where: {
+            return $0.secondItem is DropDownView && $0.firstAttribute == attribute
+        })
+        verticalConstraint?.constant = dropDownOffset
     }
     
-    func selectedElementchanged(fromOldValue oldValue:DropDownItemable?) {
-        dropDownView.select(item: selectedElement, animated: false)
-        whenShowScrollToSelection = oldValue == nil
+    func showDirectionChanged() {
+        dropDownView.maskedCorners = showDirection == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     }
     
     func isShowingChanged() {
@@ -95,6 +100,17 @@ extension DropDownViewable {
         
         backgroundTapGesture?.isEnabled = isShowing
     }
+    
+    func elementsChanged() {
+        dropDownView.elements = elements
+        dropDownView.reload()
+    }
+    
+    func selectedElementchanged(fromOldValue oldValue:DropDownItemable?) {
+        dropDownView.select(item: selectedElement, animated: false)
+        whenShowScrollToSelection = oldValue == nil
+    }
+
 }
 
 // MARK: - Internal - Setups
@@ -166,7 +182,7 @@ extension DropDownViewable where Self:UIView {
 extension DropDownViewable where Self:UIView {
     
     fileprivate func canShowDropDown(inSuperView superView:UIView) -> Bool {
-        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight
+        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight + dropDownOffset
         return superView.frame.height > finalHeight
     }
     
@@ -190,9 +206,9 @@ extension DropDownViewable where Self:UIView {
         showDirection = canShowDropDown(inSuperView: superView) ? DropDownDirection.down : DropDownDirection.up
         var verticalConstraint:NSLayoutConstraint
         if showDirection == .down {
-            verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+            verticalConstraint = dropDownView.topAnchor.constraint(equalTo: bottomAnchor, constant: dropDownOffset)
         } else {
-            verticalConstraint = dropDownView.bottomAnchor.constraint(equalTo: topAnchor, constant: 0)
+            verticalConstraint = dropDownView.bottomAnchor.constraint(equalTo: topAnchor, constant: -dropDownOffset)
         }
         
         // Add Constratins
@@ -260,6 +276,10 @@ extension DropDownViewable where Self:UIView {
         dropDownView.registerReusable(cell: cellClass, withRowHeight: rowHeight, estimatedRowHeight: estimatedRowHeight)
     }
     
+    func reload() {
+        dropDownView.reload()
+    }
+    
     func showDropDown() {
         isShowing = true
         
@@ -269,7 +289,7 @@ extension DropDownViewable where Self:UIView {
         }
         
         // Manage corners
-        layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        layer.maskedCorners = showDirection == .down ? [.layerMinXMinYCorner, .layerMaxXMinYCorner] : [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
         // Animate and show DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = dropDownViewHeight

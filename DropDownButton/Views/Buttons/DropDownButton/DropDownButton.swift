@@ -11,13 +11,13 @@ import UIKit
 @IBDesignable class DropDownButton: UIButton, DropDownViewable {
     
     // MARK: - Properties - Inspectables & Configuration
-    @IBInspectable var cornerRadius: CGFloat = 0 {
+    @IBInspectable dynamic var cornerRadius: CGFloat = 0 {
         didSet {
             layer.cornerRadius = cornerRadius
             dropDownView.cornerRadius = cornerRadius
         }
     }
-    @IBInspectable var borderWidth: CGFloat = 0 {
+    @IBInspectable dynamic var borderWidth: CGFloat = 0 {
         willSet {
             dropDownBorderWidth = newValue
         }
@@ -25,7 +25,7 @@ import UIKit
             layer.borderWidth = borderWidth
         }
     }
-    @IBInspectable var borderColor: UIColor = .clear {
+    @IBInspectable dynamic var borderColor: UIColor = .clear {
         willSet {
             dropDownBorderColor = newValue
         }
@@ -33,49 +33,58 @@ import UIKit
             layer.borderColor = borderColor.cgColor
         }
     }
-    @IBInspectable var dropDownBorderWidth: CGFloat = 0 {
+    @IBInspectable dynamic var dropDownBorderWidth: CGFloat = 0 {
         didSet {
             dropDownView.borderWidth = dropDownBorderWidth
         }
     }
-    @IBInspectable var dropDownBorderColor: UIColor = .clear {
+    @IBInspectable dynamic var dropDownBorderColor: UIColor = .clear {
         didSet {
             dropDownView.borderColor = dropDownBorderColor
         }
     }
-    @IBInspectable var shadowColor: UIColor = .clear {
+    @IBInspectable dynamic var shadowColor: UIColor = .clear {
         didSet {
             dropDownView.shadowColor = shadowColor
         }
     }
-    @IBInspectable var shadowOpacity: CGFloat = 0 {
+    @IBInspectable dynamic var shadowOpacity: CGFloat = 0 {
         didSet {
             dropDownView.shadowOpacity = shadowOpacity
         }
     }
-    @IBInspectable var shadowOffset: CGSize = .zero {
+    @IBInspectable dynamic var shadowOffset: CGSize = .zero {
         didSet {
             dropDownView.shadowOffset = shadowOffset
         }
     }
-    @IBInspectable var shadowRadius:CGFloat = 0 {
+    @IBInspectable dynamic var shadowRadius:CGFloat = 0 {
         didSet {
             dropDownView.shadowRadius = shadowRadius
         }
     }
-    var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
+    @IBInspectable dynamic var dropDownOffset:CGFloat = 0 {
+        didSet {
+            dropDownOffsetChanged()
+        }
+    }
+    @objc dynamic var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             dropDownView.separatorStyle = separatorStyle
         }
     }
-    var dismissOption:DropDownDismissOption = .automatic
+    @objc dynamic var dismissOption:DropDownDismissOption = .automatic
     
     // MARK: - Properties
     private var placeholder: String = ""
     var backgroundTapGesture: UITapClosureGestureRecognizer?
     var dropDownViewHeightConstraint: NSLayoutConstraint?
-    var showDirection: DropDownDirection = .down
     var whenShowScrollToSelection:Bool = false
+    var showDirection: DropDownDirection = .down {
+        didSet {
+            showDirectionChanged()
+        }
+    }
     var isShowing: Bool = false {
         didSet {
             isShowingChanged()

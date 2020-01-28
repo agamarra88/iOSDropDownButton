@@ -18,7 +18,7 @@ enum DropDownDirection {
     
 }
 
-enum DropDownDismissOption {
+@objc enum DropDownDismissOption:Int {
     
     case automatic  // No tap is needed to dismiss the drop down. As soon as the user interact with anything else than the drop down, the drop down is dismissed
     case onTap      // A tap inseide the drop down is needed to dismiss it

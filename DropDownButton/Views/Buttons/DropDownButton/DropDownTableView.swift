@@ -54,6 +54,11 @@ class DropDownTableView: UIView {
             layer.shadowRadius = shadowRadius
         }
     }
+    var maskedCorners: CACornerMask = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] {
+        didSet {
+            tableView.layer.maskedCorners = maskedCorners
+        }
+    }
     
     // MARK: - Properties
     var tableView: UITableView!
@@ -76,8 +81,6 @@ class DropDownTableView: UIView {
     // MARK: - Private
     private func setupView() {
         backgroundColor = .clear
-        layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        
         layer.shadowColor = shadowColor.cgColor
         layer.shadowOpacity = Float(shadowOpacity)
         layer.shadowOffset = shadowOffset
@@ -92,7 +95,7 @@ class DropDownTableView: UIView {
         tableView.allowsMultipleSelection = false
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        tableView.layer.maskedCorners = maskedCorners
         
         addSubview(tableView)
         NSLayoutConstraint.activate([tableView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
@@ -120,6 +123,17 @@ extension DropDownTableView {
         tableView.register(cellClass, forCellReuseIdentifier: cellIdentifier)
         tableView.rowHeight = rowHeight
         tableView.estimatedRowHeight = estimatedRowHeight
+    }
+    
+    func reload() {
+        let selectedIndexes = tableView.indexPathsForSelectedRows
+        tableView.reloadData()
+        
+        if let indexes = selectedIndexes {
+            for index in indexes {
+                tableView.selectRow(at: index, animated: false, scrollPosition: .none)
+            }
+        }
     }
     
     func select(item:DropDownItemable?, animated:Bool) {
