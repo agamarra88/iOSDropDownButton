@@ -294,7 +294,7 @@ extension DropDownViewable where Self:UIView {
         // Animate and show DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = dropDownViewHeight
         delegate?.dropDownButtonWillShowDropDown(self)
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             self.dropDownView.layoutIfNeeded()
             
             let factor:CGFloat = self.showDirection == .down ? 1 : -1
@@ -309,13 +309,14 @@ extension DropDownViewable where Self:UIView {
         isShowing = false
         whenShowScrollToSelection = false
         
-        // Manage corners
-        layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        
         // Animate and hide DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = 0
         delegate?.dropDownButtonWillDismissDropDown(self)
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
+            
+            // Manage corners
+            self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            
             let factor:CGFloat = self.showDirection == .down ? 1 : -1
             self.dropDownView.center.y -= factor * self.dropDownView.frame.height / 2
             self.dropDownView.layoutIfNeeded()

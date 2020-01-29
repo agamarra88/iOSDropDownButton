@@ -8,7 +8,36 @@
 
 import UIKit
 
-@IBDesignable class DropDownButton: UIButton, DropDownViewable {
+class UIClosureButton: UIButton {
+    
+    // MARK: - Definition
+    typealias closureTouchUpInsideHandler = (UIButton) -> Void
+    
+    // MARK: - Properties
+    var touchUpInsideAction: closureTouchUpInsideHandler?
+    
+    // MARK: - Constructors
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupButton()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupButton()
+    }
+    
+    private func setupButton() {
+        addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+    }
+    
+    @IBAction private func buttonTapped(_ sender:UIButton) {
+        touchUpInsideAction?(sender)
+    }
+    
+}
+
+@IBDesignable class DropDownButton: UIClosureButton, DropDownViewable {
     
     // MARK: - Properties - Inspectables & Configuration
     @IBInspectable dynamic var cornerRadius: CGFloat = 0 {
@@ -134,7 +163,9 @@ import UIKit
         setupDropDownViewable()
         
         placeholder = titleLabel?.text ?? ""
-        addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        touchUpInsideAction = { [unowned self] sender in
+            self.didTapped()
+        }
     }
     
     private func setupArrowImage() {
@@ -145,11 +176,6 @@ import UIKit
         titleEdgeInsets = UIEdgeInsets(top: 0, left: leftInsents, bottom: 0, right: rightInsents)
         
         setupArrowImageView()
-    }
-    
-    // MARK: - Action
-    @IBAction private func buttonTapped(_ sender:DropDownButton) {
-        didTapped()
     }
 }
 

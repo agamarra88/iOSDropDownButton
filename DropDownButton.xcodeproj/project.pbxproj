@@ -18,7 +18,7 @@
 		690F149F23DD63A40040E9BA /* AccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690F149E23DD63A40040E9BA /* AccountCell.swift */; };
 		690F14A223DD81A10040E9BA /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690F14A123DD81A10040E9BA /* Account.swift */; };
 		694A5F3323DF8F9A0096C188 /* DropDownViewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F3223DF8F9A0096C188 /* DropDownViewable.swift */; };
-		694A5F3523DF9CB90096C188 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F3423DF9CB90096C188 /* TapGestureRecognizer.swift */; };
+		694A5F3523DF9CB90096C188 /* UITapClosureGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F3423DF9CB90096C188 /* UITapClosureGestureRecognizer.swift */; };
 		694A5F5423DFEF110096C188 /* DropDownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F5323DFEF110096C188 /* DropDownView.swift */; };
 		694A5F5623E009250096C188 /* AppereanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F5523E009250096C188 /* AppereanceManager.swift */; };
 		697CA36B23DE6A0F003355F8 /* DropDownTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */; };
@@ -39,7 +39,7 @@
 		690F149E23DD63A40040E9BA /* AccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCell.swift; sourceTree = "<group>"; };
 		690F14A123DD81A10040E9BA /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		694A5F3223DF8F9A0096C188 /* DropDownViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownViewable.swift; sourceTree = "<group>"; };
-		694A5F3423DF9CB90096C188 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
+		694A5F3423DF9CB90096C188 /* UITapClosureGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapClosureGestureRecognizer.swift; sourceTree = "<group>"; };
 		694A5F5323DFEF110096C188 /* DropDownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownView.swift; sourceTree = "<group>"; };
 		694A5F5523E009250096C188 /* AppereanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppereanceManager.swift; sourceTree = "<group>"; };
 		697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownTableView.swift; sourceTree = "<group>"; };
@@ -132,7 +132,7 @@
 				697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */,
 				697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */,
 				694A5F3223DF8F9A0096C188 /* DropDownViewable.swift */,
-				694A5F3423DF9CB90096C188 /* TapGestureRecognizer.swift */,
+				694A5F3423DF9CB90096C188 /* UITapClosureGestureRecognizer.swift */,
 			);
 			path = DropDownButton;
 			sourceTree = "<group>";
@@ -217,7 +217,7 @@
 				697CA36B23DE6A0F003355F8 /* DropDownTableView.swift in Sources */,
 				690F148423DC0FD70040E9BA /* AppDelegate.swift in Sources */,
 				690F148623DC0FD70040E9BA /* SceneDelegate.swift in Sources */,
-				694A5F3523DF9CB90096C188 /* TapGestureRecognizer.swift in Sources */,
+				694A5F3523DF9CB90096C188 /* UITapClosureGestureRecognizer.swift in Sources */,
 				694A5F5623E009250096C188 /* AppereanceManager.swift in Sources */,
 				694A5F3323DF8F9A0096C188 /* DropDownViewable.swift in Sources */,
 				690F14A223DD81A10040E9BA /* Account.swift in Sources */,
