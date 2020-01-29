@@ -182,7 +182,8 @@ extension DropDownViewable where Self:UIView {
 extension DropDownViewable where Self:UIView {
     
     fileprivate func canShowDropDown(inSuperView superView:UIView) -> Bool {
-        let finalHeight = frame.origin.y + frame.height + dropDownViewHeight + dropDownOffset
+        let pontInSuperView = superView.convert(frame.origin, to: nil)
+        let finalHeight = pontInSuperView.y + frame.height + dropDownViewHeight + dropDownOffset
         return superView.frame.height > finalHeight
     }
     
