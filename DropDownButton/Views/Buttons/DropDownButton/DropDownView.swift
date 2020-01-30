@@ -68,6 +68,16 @@ import UIKit
             dropDownOffsetChanged()
         }
     }
+    @IBInspectable dynamic var arrowImage: UIImage? {
+        didSet {
+            arrowImageView?.image = arrowImage
+        }
+    }
+    @objc dynamic var arrowImageContentMode: UIView.ContentMode = .center {
+        didSet {
+            arrowImageView?.contentMode = arrowImageContentMode
+        }
+    }
     @objc dynamic var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             dropDownView.separatorStyle = separatorStyle
@@ -94,7 +104,7 @@ import UIKit
     var selectedItemAction: dropDownSelectedItemAction?
     
     var dropDownView: DropDownTableView
-    var arrowImageView: UIImageView!
+    var arrowImageView: UIImageView?
     var elements: [DropDownItemable] = [] {
         didSet {
             elementsChanged()

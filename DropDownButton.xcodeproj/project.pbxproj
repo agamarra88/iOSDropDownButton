@@ -128,9 +128,9 @@
 			children = (
 				690F148C23DC0FD90040E9BA /* Assets.xcassets */,
 				690F149923DC7BBD0040E9BA /* DropDownButton.swift */,
-				694A5F5323DFEF110096C188 /* DropDownView.swift */,
 				697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */,
 				697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */,
+				694A5F5323DFEF110096C188 /* DropDownView.swift */,
 				694A5F3223DF8F9A0096C188 /* DropDownViewable.swift */,
 				694A5F3423DF9CB90096C188 /* UITapClosureGestureRecognizer.swift */,
 			);

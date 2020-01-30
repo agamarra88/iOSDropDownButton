@@ -18,21 +18,21 @@ enum DropDownConstants {
 
 protocol DropDownViewDelegate:class {
     
-    func dropDownButton(_ sender:DropDownViewable, didSelectItem item:DropDownItemable, atIndex index:Int)
+    func dropDown(_ sender:DropDownViewable, didSelectItem item:DropDownItemable, atIndex index:Int)
     
-    func dropDownButtonWillShowDropDown(_ sender:DropDownViewable)
-    func dropDownButtonDidShowDropDown(_ sender:DropDownViewable)
-    func dropDownButtonWillDismissDropDown(_ sender:DropDownViewable)
-    func dropDownButtonDidDismissDropDown(_ sender:DropDownViewable)
+    func dropDown(_ sender:DropDownViewable, willShowWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownViewable, didShowWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownViewable, willDismissWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownViewable, didDismissWithDirection direction:DropDownDirection)
     
 }
 
 extension DropDownViewDelegate {
 
-    func dropDownButtonWillShowDropDown(_ sender:DropDownViewable) {}
-    func dropDownButtonDidShowDropDown(_ sender:DropDownViewable) {}
-    func dropDownButtonWillDismissDropDown(_ sender:DropDownViewable) {}
-    func dropDownButtonDidDismissDropDown(_ sender:DropDownViewable) {}
+    func dropDown(_ sender:DropDownViewable, willShowWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownViewable, didShowWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownViewable, willDismissWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownViewable, didDismissWithDirection direction:DropDownDirection) { }
     
 }
 
@@ -46,8 +46,10 @@ protocol DropDownViewable: UIGestureRecognizerDelegate {
     var shadowColor: UIColor { get set }
     var shadowOpacity: CGFloat { get set }
     var shadowOffset: CGSize { get set }
-    var shadowRadius:CGFloat { get set }
-    var dropDownOffset:CGFloat { get set }
+    var shadowRadius: CGFloat { get set }
+    var dropDownOffset: CGFloat { get set }
+    var arrowImage: UIImage? { get set }
+    var arrowImageContentMode: UIView.ContentMode { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
     var dismissOption:DropDownDismissOption { get set }
     
@@ -60,8 +62,8 @@ protocol DropDownViewable: UIGestureRecognizerDelegate {
     var delegate:DropDownViewDelegate? { get set }
     var selectedItemAction: dropDownSelectedItemAction? { get set }
     
+    var arrowImageView: UIImageView? { get set }
     var dropDownView: DropDownTableView { get set }
-    var arrowImageView: UIImageView! { get set }
     var elements: [DropDownItemable] { get set }
     var selectedElement:DropDownItemable? { get set }
 }
@@ -95,9 +97,6 @@ extension DropDownViewable {
     }
     
     func isShowingChanged() {
-        let image = isShowing ? UIImage(named: "dropDownArrowUp") : UIImage(named: "dropDownArrowDown")
-        arrowImageView.image = image
-        
         backgroundTapGesture?.isEnabled = isShowing
     }
     
@@ -129,22 +128,22 @@ extension DropDownViewable where Self:UIView {
         let imageViewWidth = DropDownConstants.imageViewWidth
         let isRightToLeft = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
-        let image = UIImage(named: "dropDownArrowDown")
+        let image = arrowImage ?? UIImage(named: "dropDownArrowDown")
         arrowImageView = UIImageView(image: image)
-        arrowImageView.contentMode = .center
-        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(arrowImageView)
+        arrowImageView?.contentMode = arrowImageContentMode
+        arrowImageView?.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(arrowImageView!)
         
         var horizontalConstraint:NSLayoutConstraint!
         if isRightToLeft {
-            horizontalConstraint = arrowImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)
+            horizontalConstraint = arrowImageView?.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)
         } else {
-            horizontalConstraint = arrowImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)
+            horizontalConstraint = arrowImageView?.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0)
         }
         NSLayoutConstraint.activate([horizontalConstraint,
-                                     arrowImageView.widthAnchor.constraint(equalToConstant: imageViewWidth),
-                                     arrowImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
-                                     arrowImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)])
+                                     arrowImageView!.widthAnchor.constraint(equalToConstant: imageViewWidth),
+                                     arrowImageView!.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+                                     arrowImageView!.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)])
     }
     
     private func setupDropDownView() {
@@ -168,7 +167,7 @@ extension DropDownViewable where Self:UIView {
         dropDownView.selectedItemAction = { [unowned self] (item, index) in
             self.selectedElement = item
             self.selectedItemAction?(item, index)
-            self.delegate?.dropDownButton(self, didSelectItem: item, atIndex: index)
+            self.delegate?.dropDown(self, didSelectItem: item, atIndex: index)
             
             if self.dismissOption != .manual {
                 self.dismissDropDown()
@@ -294,15 +293,20 @@ extension DropDownViewable where Self:UIView {
         
         // Animate and show DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = dropDownViewHeight
-        delegate?.dropDownButtonWillShowDropDown(self)
+        delegate?.dropDown(self, willShowWithDirection: showDirection)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
-            self.dropDownView.layoutIfNeeded()
+            // Rotate arrow view
+            if self.arrowImageView != nil {
+                self.arrowImageView!.transform = self.arrowImageView!.transform.rotated(by: CGFloat.pi)
+            }
             
+            // Update constraint and frame while we animate
+            self.dropDownView.layoutIfNeeded()
             let factor:CGFloat = self.showDirection == .down ? 1 : -1
             self.dropDownView.center.y += factor * self.dropDownView.frame.height / 2
             
             }, completion: { [unowned self] _ in
-                self.delegate?.dropDownButtonDidShowDropDown(self)
+                self.delegate?.dropDown(self, didShowWithDirection: self.showDirection)
         })
     }
     
@@ -312,18 +316,23 @@ extension DropDownViewable where Self:UIView {
         
         // Animate and hide DropDownView (TableView)
         dropDownViewHeightConstraint?.constant = 0
-        delegate?.dropDownButtonWillDismissDropDown(self)
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
+        delegate?.dropDown(self, willDismissWithDirection: showDirection)
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
+            // Rotate arrow view
+            if self.arrowImageView != nil {
+                self.arrowImageView!.transform = self.arrowImageView!.transform.rotated(by: CGFloat.pi)
+            }
             
             // Manage corners
             self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             
+            // Update constraint and frame while we animate
             let factor:CGFloat = self.showDirection == .down ? 1 : -1
             self.dropDownView.center.y -= factor * self.dropDownView.frame.height / 2
             self.dropDownView.layoutIfNeeded()
             
             }, completion: { [unowned self] _ in
-                self.delegate?.dropDownButtonDidDismissDropDown(self)
+                self.delegate?.dropDown(self, didDismissWithDirection: self.showDirection)
         })
     }
     

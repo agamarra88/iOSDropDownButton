@@ -47,7 +47,7 @@ class ViewController: UIViewController {
 
 extension ViewController: DropDownViewDelegate {
     
-    func dropDownButton(_ sender: DropDownViewable, didSelectItem item: DropDownItemable, atIndex index: Int) {
+    func dropDown(_ sender: DropDownViewable, didSelectItem item: DropDownItemable, atIndex index: Int) {
         print(item)
     }
     
