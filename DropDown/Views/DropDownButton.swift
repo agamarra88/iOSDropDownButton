@@ -117,17 +117,16 @@ public class UIClosureButton: UIButton {
     
     // MARK: - Properties
     private var placeholder: String = ""
-    public var backgroundTapGesture: UITapClosureGestureRecognizer?
     
     public var whenShowScrollToSelection:Bool = false
     public var showDirection: DropDownDirection = .down {
         didSet {
-            showDirectionChanged()
+//            showDirectionChanged()
         }
     }
     public var isShowing: Bool = false {
         didSet {
-            isShowingChanged()
+//            isShowingChanged()
         }
     }
     
@@ -187,21 +186,5 @@ public class UIClosureButton: UIButton {
         titleEdgeInsets = UIEdgeInsets(top: 0, left: leftInsents, bottom: 0, right: rightInsents)
         
         setupArrowImageView()
-    }
-}
-
-// MARK: - UIGestureRecognizerDelegate
-extension DropDownButton: UIGestureRecognizerDelegate {
-    
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return isAnOutside(touch: touch)
     }
 }

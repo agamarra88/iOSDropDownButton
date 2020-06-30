@@ -28,7 +28,7 @@ public extension DropDownViewDelegate {
     
 }
 
-public protocol DropDownViewable: UIGestureRecognizerDelegate {
+public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     
     var cornerRadius: CGFloat { get set }
     var borderWidth: CGFloat { get set }
@@ -45,8 +45,6 @@ public protocol DropDownViewable: UIGestureRecognizerDelegate {
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
     var dismissOption:DropDownDismissOption { get set }
     
-    var backgroundTapGesture: UITapClosureGestureRecognizer? { get set }
-    
     var showDirection: DropDownDirection { get set }
     var whenShowScrollToSelection: Bool { get set }
     var isShowing: Bool { get set }
@@ -58,6 +56,9 @@ public protocol DropDownViewable: UIGestureRecognizerDelegate {
     var dropDownView: DropDownTableView { get set }
     var elements: [DropDownItemable] { get set }
     var selectedElement:DropDownItemable? { get set }
+    
+    func showDropDown()
+    func dismissDropDown()
 }
 
 
@@ -77,19 +78,11 @@ extension DropDownViewable {
     func dropDownOffsetChanged() {
         guard let constraints = dropDownView.superview?.constraints else { return }
         
-        let attribute:NSLayoutConstraint.Attribute = showDirection == .down ? .top : .bottom
+        let attribute: NSLayoutConstraint.Attribute = showDirection == .down ? .top : .bottom
         let verticalConstraint = constraints.first(where: {
             return $0.secondItem is DropDownView && $0.firstAttribute == attribute
         })
         verticalConstraint?.constant = dropDownOffset
-    }
-    
-    func showDirectionChanged() {
-        dropDownView.maskedCorners = showDirection == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-    }
-    
-    func isShowingChanged() {
-        backgroundTapGesture?.isEnabled = isShowing
     }
     
     func elementsChanged() {
@@ -105,7 +98,7 @@ extension DropDownViewable {
 }
 
 // MARK: - Internal - Setups
-extension DropDownViewable where Self:UIView {
+extension DropDownViewable where Self: UIView {
     
     func setupDropDownViewable() {
         clipsToBounds = true
@@ -241,19 +234,3 @@ public extension DropDownViewable where Self:UIView {
     }
 }
 
-// MARK: - Methods for UIGestureRecognizerDelegate
-extension DropDownViewable where Self:UIView {
-    
-    func isAnOutside(touch:UITouch) -> Bool {
-        let isInDropDown = isTouch(touch, inView: dropDownView)
-        let isInSelf = isTouch(touch, inView: self)
-        return !isInDropDown && !isInSelf
-    }
-    
-    private func isTouch(_ touch:UITouch, inView view:UIView) -> Bool {
-        let location = touch.location(in: view)
-        let inXAxis = view.bounds.origin.x <= location.x && location.x <= view.bounds.width
-        let inYAxis = view.bounds.origin.y <= location.y && location.y <= view.bounds.height
-        return inXAxis && inYAxis
-    }
-}

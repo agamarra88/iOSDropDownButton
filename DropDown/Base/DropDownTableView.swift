@@ -62,12 +62,21 @@ public class DropDownTableView: UIView {
     
     var dismissOption: DropDownDismissOption = .automatic
     var dropDownOffset: CGFloat = 0
-    var direction: DropDownDirection = .down
-    var isShowing: Bool = false
+    var direction: DropDownDirection = .down {
+        didSet {
+            maskedCorners = direction == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
+    }
+    var isShowing: Bool = false {
+        didSet {
+            backgroundTapGesture?.isEnabled = isShowing
+        }
+    }
     
     // MARK: - Properties
     fileprivate var heightConstraint: NSLayoutConstraint?
     fileprivate var backgroundTapGesture: UITapClosureGestureRecognizer?
+    fileprivate weak var ownerView: DropDownViewable?
     
     public var tableView: UITableView!
     public var elements: [DropDownItemable] = []
@@ -210,10 +219,33 @@ extension DropDownTableView: UITableViewDelegate {
     
 }
 
+// MARK: - UIGestureRecognizerDelegate
+extension DropDownTableView: UIGestureRecognizerDelegate {
+    
+    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // If OwnerView is nil means that the DropDown is not been added so the touch is acceptable
+        guard let dropDownOnwerView = ownerView as? UIView else { return true }
+        
+        // If the OnwerView is not nil, we need to evaluate if it is inside or outside
+        let isInSelf = touch.isInside(view: self)
+        let isInOnwer = touch.isInside(view: dropDownOnwerView)
+        return !isInOnwer && !isInSelf
+    }
+}
+
 // MARK: - Attach to View
 extension DropDownTableView {
     
-    public func attach(to view: UIView) {
+    public func attach(to view: UIView & DropDownViewable) {
+        ownerView = view
         
         // Validate if view is attached. If the constraint is NILL then it is not attached
         guard heightConstraint == nil else { return }
@@ -269,27 +301,24 @@ extension DropDownTableView {
     
     fileprivate func registerDismissGesture(to superView: UIView) {
         if backgroundTapGesture == nil {
-            
-            //            // Finding the best superview for the dissmiss gesture
-            //            var parentView: UIView? = superView
-            //            while !(parentView is UIScrollView) && parentView?.superview != nil {
-            //                parentView = parentView?.superview
-            //            }
-            //
-            //            // Register gesture
-            //            backgroundTapGesture = UITapClosureGestureRecognizer(action: { [weak self] _ in
-            //                guard let weakself = self else { return }
-            //                if weakself.isShowing && weakself.dismissOption == .automatic {
-            //                    weakself.dismissDropDown()
-            //                }
-            //            })
-            //            backgroundTapGesture?.delegate = superView // TODO: TEMPORAL
-            //            parentView?.isUserInteractionEnabled = true
-            //            parentView?.addGestureRecognizer(backgroundTapGesture!)
+            // Finding the best superview for the dissmiss gesture
+            var parentView: UIView? = superView
+            while !(parentView is UIScrollView) && parentView?.superview != nil {
+                parentView = parentView?.superview
+            }
+
+            // Register gesture
+            backgroundTapGesture = UITapClosureGestureRecognizer(action: { [weak self] _ in
+                guard let weakself = self else { return }
+                if weakself.isShowing && weakself.dismissOption == .automatic {
+                    weakself.ownerView?.dismissDropDown()
+                }
+            })
+            backgroundTapGesture?.delegate = self
+            parentView?.isUserInteractionEnabled = true
+            parentView?.addGestureRecognizer(backgroundTapGesture!)
         }
     }
-    
-    
     
     var dropDownViewHeight: CGFloat {
         let factor = elements.count < DropDownConstants.numberOfRowsToShow ? elements.count : DropDownConstants.numberOfRowsToShow

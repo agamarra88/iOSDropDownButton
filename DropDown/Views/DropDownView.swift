@@ -83,20 +83,18 @@ import UIKit
             dropDownView.separatorStyle = separatorStyle
         }
     }
-    @objc public dynamic var dismissOption:DropDownDismissOption = .automatic
+    @objc public dynamic var dismissOption: DropDownDismissOption = .automatic
     
     // MARK: - Properties
-    public var backgroundTapGesture: UITapClosureGestureRecognizer?
-    
     public var whenShowScrollToSelection:Bool = false
     public var showDirection: DropDownDirection = .down {
         didSet {
-            showDirectionChanged()
+//            showDirectionChanged()
         }
     }
     public var isShowing: Bool = false {
         didSet {
-            isShowingChanged()
+//            isShowingChanged()
         }
     }
     
@@ -132,37 +130,18 @@ import UIKit
         setupView()
         setupArrowImageView()
     }
-    
-    // MARK: - Action
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first,
-            !isAnOutside(touch: touch) {
-            didTapped()
-        }
-    }
 }
 
 // MARK: - Private
 private extension DropDownView {
     
     func setupView() {
+        let tapGesture = UITapClosureGestureRecognizer { _ in
+            self.didTapped()
+        }
+        addGestureRecognizer(tapGesture)
         isUserInteractionEnabled = true
+        
         setupDropDownViewable()
-    }
-}
-
-// MARK: - UIGestureRecognizerDelegate
-extension DropDownView: UIGestureRecognizerDelegate {
-    
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return isAnOutside(touch: touch)
     }
 }
