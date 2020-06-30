@@ -3,30 +3,31 @@
 //  DropDownButton
 //
 //  Created by Arturo Gamarra on 1/25/20.
-//  Copyright © 2020 Vector. All rights reserved.
+//  Copyright © 2020 Abstract. All rights reserved.
 //
 
 import UIKit
 
-class UIClosureButton: UIButton {
+public class UIClosureButton: UIButton {
     
     // MARK: - Definition
-    typealias closureTouchUpInsideHandler = (UIButton) -> Void
+    public typealias closureTouchUpInsideHandler = (UIButton) -> Void
     
     // MARK: - Properties
-    var touchUpInsideAction: closureTouchUpInsideHandler?
+    public var touchUpInsideAction: closureTouchUpInsideHandler?
     
     // MARK: - Constructors
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         setupButton()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupButton()
     }
     
+    // MARK: - Private
     private func setupButton() {
         addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
     }
@@ -37,16 +38,16 @@ class UIClosureButton: UIButton {
     
 }
 
-@IBDesignable class DropDownButton: UIClosureButton, DropDownViewable {
+@IBDesignable public class DropDownButton: UIClosureButton, DropDownViewable {
     
     // MARK: - Properties - Inspectables & Configuration
-    @IBInspectable dynamic var cornerRadius: CGFloat = 0 {
+    @IBInspectable public dynamic var cornerRadius: CGFloat = 0 {
         didSet {
             layer.cornerRadius = cornerRadius
             dropDownView.cornerRadius = cornerRadius
         }
     }
-    @IBInspectable dynamic var borderWidth: CGFloat = 0 {
+    @IBInspectable public dynamic var borderWidth: CGFloat = 0 {
         willSet {
             dropDownBorderWidth = newValue
         }
@@ -54,7 +55,7 @@ class UIClosureButton: UIButton {
             layer.borderWidth = borderWidth
         }
     }
-    @IBInspectable dynamic var borderColor: UIColor = .clear {
+    @IBInspectable public  dynamic var borderColor: UIColor = .clear {
         willSet {
             dropDownBorderColor = newValue
         }
@@ -62,85 +63,85 @@ class UIClosureButton: UIButton {
             layer.borderColor = borderColor.cgColor
         }
     }
-    @IBInspectable dynamic var dropDownBorderWidth: CGFloat = 0 {
+    @IBInspectable public dynamic var dropDownBorderWidth: CGFloat = 0 {
         didSet {
             dropDownView.borderWidth = dropDownBorderWidth
         }
     }
-    @IBInspectable dynamic var dropDownBorderColor: UIColor = .clear {
+    @IBInspectable public dynamic var dropDownBorderColor: UIColor = .clear {
         didSet {
             dropDownView.borderColor = dropDownBorderColor
         }
     }
-    @IBInspectable dynamic var shadowColor: UIColor = .clear {
+    @IBInspectable public dynamic var shadowColor: UIColor = .clear {
         didSet {
             dropDownView.shadowColor = shadowColor
         }
     }
-    @IBInspectable dynamic var shadowOpacity: CGFloat = 0 {
+    @IBInspectable public dynamic var shadowOpacity: CGFloat = 0 {
         didSet {
             dropDownView.shadowOpacity = shadowOpacity
         }
     }
-    @IBInspectable dynamic var shadowOffset: CGSize = .zero {
+    @IBInspectable public dynamic var shadowOffset: CGSize = .zero {
         didSet {
             dropDownView.shadowOffset = shadowOffset
         }
     }
-    @IBInspectable dynamic var shadowRadius:CGFloat = 0 {
+    @IBInspectable public dynamic var shadowRadius: CGFloat = 0 {
         didSet {
             dropDownView.shadowRadius = shadowRadius
         }
     }
-    @IBInspectable dynamic var dropDownOffset:CGFloat = 0 {
+    @IBInspectable public dynamic var dropDownOffset: CGFloat = 0 {
         didSet {
             dropDownOffsetChanged()
         }
     }
-    @IBInspectable dynamic var arrowImage: UIImage? {
+    @IBInspectable public dynamic var arrowImage: UIImage? {
         didSet {
             arrowImageView?.image = arrowImage
         }
     }
-    @objc dynamic var arrowImageContentMode: UIView.ContentMode = .center {
+    @objc dynamic public var arrowImageContentMode: UIView.ContentMode = .center {
         didSet {
             arrowImageView?.contentMode = arrowImageContentMode
         }
     }
-    @objc dynamic var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
+    @objc dynamic public var separatorStyle: UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             dropDownView.separatorStyle = separatorStyle
         }
     }
-    @objc dynamic var dismissOption:DropDownDismissOption = .automatic
+    @objc dynamic public var dismissOption: DropDownDismissOption = .automatic
     
     // MARK: - Properties
     private var placeholder: String = ""
-    var backgroundTapGesture: UITapClosureGestureRecognizer?
-    var dropDownViewHeightConstraint: NSLayoutConstraint?
-    var whenShowScrollToSelection:Bool = false
-    var showDirection: DropDownDirection = .down {
+    public var backgroundTapGesture: UITapClosureGestureRecognizer?
+    
+    public var whenShowScrollToSelection:Bool = false
+    public var showDirection: DropDownDirection = .down {
         didSet {
             showDirectionChanged()
         }
     }
-    var isShowing: Bool = false {
+    public var isShowing: Bool = false {
         didSet {
             isShowingChanged()
         }
     }
     
-    weak var delegate:DropDownViewDelegate?
-    var selectedItemAction: dropDownSelectedItemAction?
+    public weak var delegate:DropDownViewDelegate?
+    public var selectedItemAction: dropDownSelectedItemAction?
     
-    var dropDownView: DropDownTableView
-    var arrowImageView: UIImageView?
-    var elements: [DropDownItemable] = [] {
+    public var dropDownView: DropDownTableView
+    public var arrowImageView: UIImageView?
+    public var elements: [DropDownItemable] = [] {
         didSet {
             elementsChanged()
         }
     }
-    var selectedElement:DropDownItemable? {
+    public var selectedElement:DropDownItemable? {
         didSet {
             if let element = selectedElement {
                 setTitle(element.description, for: .normal)
@@ -152,7 +153,7 @@ class UIClosureButton: UIButton {
     }
     
     // MARK: - Constructors
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         dropDownView = DropDownTableView()
         
         super.init(frame: frame)
@@ -160,7 +161,7 @@ class UIClosureButton: UIButton {
         setupArrowImage()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         dropDownView = DropDownTableView()
         
         super.init(coder: coder)
@@ -192,15 +193,15 @@ class UIClosureButton: UIButton {
 // MARK: - UIGestureRecognizerDelegate
 extension DropDownButton: UIGestureRecognizerDelegate {
     
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return isAnOutside(touch: touch)
     }
 }

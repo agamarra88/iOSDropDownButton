@@ -3,10 +3,11 @@
 //  DropDownButton
 //
 //  Created by Arturo Gamarra on 1/26/20.
-//  Copyright © 2020 Vector. All rights reserved.
+//  Copyright © 2020 Abstract. All rights reserved.
 //
 
 import Foundation
+import DropDown
 
 class Account: DropDownItemable {
     

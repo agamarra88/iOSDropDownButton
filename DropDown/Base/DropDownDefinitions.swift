@@ -3,22 +3,30 @@
 //  DropDownButton
 //
 //  Created by Arturo Gamarra on 1/26/20.
-//  Copyright © 2020 Vector. All rights reserved.
+//  Copyright © 2020 Abstract. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - Definitions
-typealias dropDownSelectedItemAction = (DropDownItemable, Int) -> Void
+public typealias dropDownSelectedItemAction = (DropDownItemable, Int) -> Void
 
-enum DropDownDirection {
+// MARK: - Constants
+enum DropDownConstants {
+    
+    static let numberOfRowsToShow = 3
+    static let imageViewWidth: CGFloat = 40
+    
+}
+
+public enum DropDownDirection {
     
     case up
     case down
     
 }
 
-@objc enum DropDownDismissOption:Int {
+@objc public enum DropDownDismissOption: Int {
     
     case automatic  // No tap is needed to dismiss the drop down. As soon as the user interact with anything else than the drop down, the drop down is dismissed
     case onTap      // A tap inseide the drop down is needed to dismiss it
@@ -27,17 +35,17 @@ enum DropDownDirection {
 }
 
 // MARK: - DropDownItemable
-protocol DropDownItemable: CustomStringConvertible {
+public protocol DropDownItemable: CustomStringConvertible {
     
     func isEqual(to other: DropDownItemable) -> Bool
     
 }
 
-extension String:DropDownItemable {
+extension String: DropDownItemable {
     
 }
 
-extension DropDownItemable where Self: Equatable {
+public extension DropDownItemable where Self: Equatable {
     
     func isEqual(to other: DropDownItemable) -> Bool {
         guard let otherItem = other as? Self else { return false }
@@ -46,7 +54,7 @@ extension DropDownItemable where Self: Equatable {
 }
 
 // MARK: - DropDownViewCellable
-protocol DropDownViewCellable:class {
+public protocol DropDownViewCellable: class {
 
     func configureBySetting(item:DropDownItemable)
     
