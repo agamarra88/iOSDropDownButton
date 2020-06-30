@@ -20,7 +20,7 @@ public protocol DropDownViewDelegate:class {
 }
 
 public extension DropDownViewDelegate {
-
+    
     func dropDown(_ sender:DropDownViewable, willShowWithDirection direction:DropDownDirection) { }
     func dropDown(_ sender:DropDownViewable, didShowWithDirection direction:DropDownDirection) { }
     func dropDown(_ sender:DropDownViewable, willDismissWithDirection direction:DropDownDirection) { }
@@ -43,11 +43,10 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     var arrowImage: UIImage? { get set }
     var arrowImageContentMode: UIView.ContentMode { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
-    var dismissOption:DropDownDismissOption { get set }
     
-    var showDirection: DropDownDirection { get set }
-    var whenShowScrollToSelection: Bool { get set }
-    var isShowing: Bool { get set }
+    var dismissOption: DropDownDismissOption { get set }
+    var direction: DropDownDirection { get }
+    var isShowing: Bool { get }
     
     var delegate:DropDownViewDelegate? { get set }
     var selectedItemAction: dropDownSelectedItemAction? { get set }
@@ -61,24 +60,40 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     func dismissDropDown()
 }
 
-
-// MARK: - Calculated Properties
-extension DropDownViewable {
-
-    var dropDownViewHeight: CGFloat {
-        let factor = elements.count < DropDownConstants.numberOfRowsToShow ? elements.count : DropDownConstants.numberOfRowsToShow
-        let height = dropDownView.tableView.rowHeight != UITableView.automaticDimension ? dropDownView.tableView.rowHeight : dropDownView.tableView.estimatedRowHeight
-        return CGFloat(factor) * height // TODO: Improve calculation
-    }
-}
-
 // MARK: - Internal - For Properties Observers
 extension DropDownViewable {
+    
+    public var dismissOption: DropDownDismissOption {
+        get {
+            dropDownView.dismissOption
+        }
+        set {
+            dropDownView.dismissOption = newValue
+        }
+    }
+    
+    public var direction: DropDownDirection {
+        get {
+            dropDownView.direction
+        }
+        set {
+            dropDownView.direction = newValue
+        }
+    }
+    
+    public var isShowing: Bool {
+        get {
+            dropDownView.isShowing
+        }
+        set {
+            dropDownView.isShowing = newValue
+        }
+    }
     
     func dropDownOffsetChanged() {
         guard let constraints = dropDownView.superview?.constraints else { return }
         
-        let attribute: NSLayoutConstraint.Attribute = showDirection == .down ? .top : .bottom
+        let attribute: NSLayoutConstraint.Attribute = direction == .down ? .top : .bottom
         let verticalConstraint = constraints.first(where: {
             return $0.secondItem is DropDownView && $0.firstAttribute == attribute
         })
@@ -92,9 +107,9 @@ extension DropDownViewable {
     
     func selectedElementchanged(fromOldValue oldValue:DropDownItemable?) {
         dropDownView.select(item: selectedElement, animated: false)
-        whenShowScrollToSelection = oldValue == nil
+        dropDownView.whenShowScrollToSelection = oldValue == nil
     }
-
+    
 }
 
 // MARK: - Internal - Setups
@@ -160,8 +175,8 @@ extension DropDownViewable where Self: UIView {
     
 }
 
-// MARK: - Internal - User Tapped in View
-extension DropDownViewable where Self:UIView {
+// MARK: - Public
+public extension DropDownViewable where Self: UIView {
     
     func didTapped() {
         // Add constraints if needed
@@ -177,11 +192,6 @@ extension DropDownViewable where Self:UIView {
         }
     }
     
-}
-
-// MARK: - Public
-public extension DropDownViewable where Self:UIView {
-    
     func registerReusable(nibCell nib:UINib, withRowHeight rowHeight:CGFloat = UITableView.automaticDimension, estimatedRowHeight:CGFloat = 45) {
         dropDownView.registerReusable(nibCell: nib, withRowHeight: rowHeight, estimatedRowHeight: estimatedRowHeight)
     }
@@ -195,11 +205,6 @@ public extension DropDownViewable where Self:UIView {
     }
     
     func showDropDown() {
-        // Scroll to Selected Item
-        if whenShowScrollToSelection {
-            dropDownView.scrollToSelectedIndex()
-        }
-        
         // Manage corners
         layer.maskedCorners = dropDownView.direction == .down ? [.layerMinXMinYCorner, .layerMaxXMinYCorner] : [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
@@ -210,14 +215,12 @@ public extension DropDownViewable where Self:UIView {
                 self.arrowImageView!.transform = self.arrowImageView!.transform.rotated(by: CGFloat.pi)
             }
             
-        }, completion: { [unowned self] _ in
-            self.delegate?.dropDown(self, didShowWithDirection: self.dropDownView.direction)
+            }, completion: { [unowned self] _ in
+                self.delegate?.dropDown(self, didShowWithDirection: self.dropDownView.direction)
         })
     }
     
     func dismissDropDown() {
-        whenShowScrollToSelection = false
-        
         delegate?.dropDown(self, willDismissWithDirection: self.dropDownView.direction)
         dropDownView.dismiss(animations: { [unowned self] in
             // Rotate arrow view
@@ -228,8 +231,8 @@ public extension DropDownViewable where Self:UIView {
             // Manage corners
             self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             
-        }, completion: { [unowned self] _ in
-            self.delegate?.dropDown(self, didDismissWithDirection: self.dropDownView.direction)
+            }, completion: { [unowned self] _ in
+                self.delegate?.dropDown(self, didDismissWithDirection: self.dropDownView.direction)
         })
     }
 }

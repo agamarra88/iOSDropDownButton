@@ -113,22 +113,9 @@ public class UIClosureButton: UIButton {
             dropDownView.separatorStyle = separatorStyle
         }
     }
-    @objc dynamic public var dismissOption: DropDownDismissOption = .automatic
     
     // MARK: - Properties
     private var placeholder: String = ""
-    
-    public var whenShowScrollToSelection:Bool = false
-    public var showDirection: DropDownDirection = .down {
-        didSet {
-//            showDirectionChanged()
-        }
-    }
-    public var isShowing: Bool = false {
-        didSet {
-//            isShowingChanged()
-        }
-    }
     
     public weak var delegate:DropDownViewDelegate?
     public var selectedItemAction: dropDownSelectedItemAction?

@@ -54,33 +54,33 @@ public class DropDownTableView: UIView {
             layer.shadowRadius = shadowRadius
         }
     }
-    public var maskedCorners: CACornerMask = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] {
+    public var dismissOption: DropDownDismissOption = .automatic
+    public var direction: DropDownDirection = .down {
         didSet {
-            tableView.layer.maskedCorners = maskedCorners
+            tableView.layer.maskedCorners = direction == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
     }
-    
-    var dismissOption: DropDownDismissOption = .automatic
-    var dropDownOffset: CGFloat = 0
-    var direction: DropDownDirection = .down {
-        didSet {
-            maskedCorners = direction == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        }
-    }
-    var isShowing: Bool = false {
+    public var isShowing: Bool = false {
         didSet {
             backgroundTapGesture?.isEnabled = isShowing
         }
     }
-    
-    // MARK: - Properties
-    fileprivate var heightConstraint: NSLayoutConstraint?
-    fileprivate var backgroundTapGesture: UITapClosureGestureRecognizer?
-    fileprivate weak var ownerView: DropDownViewable?
-    
+    public var whenShowScrollToSelection: Bool = false
     public var tableView: UITableView!
     public var elements: [DropDownItemable] = []
     public var selectedItemAction: dropDownSelectedItemAction?
+    
+    var dropDownOffset: CGFloat = 0
+    
+    // MARK: - Properties - Private
+    private weak var ownerView: DropDownViewable?
+    private var heightConstraint: NSLayoutConstraint?
+    private var backgroundTapGesture: UITapClosureGestureRecognizer?
+    private var maskedCorners: CACornerMask = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] {
+        didSet {
+            tableView.layer.maskedCorners = maskedCorners
+        }
+    }
     
     // MARK: - Constructors
     public override init(frame: CGRect) {
@@ -189,58 +189,6 @@ public extension DropDownTableView {
     }
 }
 
-// MARK: - UITableViewDataSource
-extension DropDownTableView: UITableViewDataSource {
-    
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return elements.count
-    }
-    
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item = elements[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        if let customCell = cell as? DropDownViewCellable {
-            customCell.configureBySetting(item: item)
-        } else {
-            cell.textLabel?.text = item.description
-        }
-        return cell
-    }
-    
-}
-
-// MARK: - UITableViewDelegate
-extension DropDownTableView: UITableViewDelegate {
-    
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = elements[indexPath.row]
-        selectedItemAction?(item, indexPath.row)
-    }
-    
-}
-
-// MARK: - UIGestureRecognizerDelegate
-extension DropDownTableView: UIGestureRecognizerDelegate {
-    
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        // If OwnerView is nil means that the DropDown is not been added so the touch is acceptable
-        guard let dropDownOnwerView = ownerView as? UIView else { return true }
-        
-        // If the OnwerView is not nil, we need to evaluate if it is inside or outside
-        let isInSelf = touch.isInside(view: self)
-        let isInOnwer = touch.isInside(view: dropDownOnwerView)
-        return !isInOnwer && !isInSelf
-    }
-}
-
 // MARK: - Attach to View
 extension DropDownTableView {
     
@@ -301,13 +249,7 @@ extension DropDownTableView {
     
     fileprivate func registerDismissGesture(to superView: UIView) {
         if backgroundTapGesture == nil {
-            // Finding the best superview for the dissmiss gesture
-            var parentView: UIView? = superView
-            while !(parentView is UIScrollView) && parentView?.superview != nil {
-                parentView = parentView?.superview
-            }
-
-            // Register gesture
+            
             backgroundTapGesture = UITapClosureGestureRecognizer(action: { [weak self] _ in
                 guard let weakself = self else { return }
                 if weakself.isShowing && weakself.dismissOption == .automatic {
@@ -315,6 +257,8 @@ extension DropDownTableView {
                 }
             })
             backgroundTapGesture?.delegate = self
+            
+            let parentView = superView.viewController?.view
             parentView?.isUserInteractionEnabled = true
             parentView?.addGestureRecognizer(backgroundTapGesture!)
         }
@@ -333,6 +277,11 @@ extension DropDownTableView {
     public func show(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
         isShowing = true
         
+        // Scroll to Selected Item
+        if whenShowScrollToSelection {
+            scrollToSelectedIndex()
+        }
+        
         // Animate and show DropDownView (TableView)
         heightConstraint?.constant = dropDownViewHeight
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
@@ -350,6 +299,7 @@ extension DropDownTableView {
     
     public func dismiss(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
         isShowing = false
+        whenShowScrollToSelection = false
         
         // Animate and hide DropDownView (TableView)
         heightConstraint?.constant = 0
@@ -367,3 +317,56 @@ extension DropDownTableView {
     }
 }
 
+
+
+// MARK: - UITableViewDataSource
+extension DropDownTableView: UITableViewDataSource {
+    
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return elements.count
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let item = elements[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        if let customCell = cell as? DropDownViewCellable {
+            customCell.configureBySetting(item: item)
+        } else {
+            cell.textLabel?.text = item.description
+        }
+        return cell
+    }
+    
+}
+
+// MARK: - UITableViewDelegate
+extension DropDownTableView: UITableViewDelegate {
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = elements[indexPath.row]
+        selectedItemAction?(item, indexPath.row)
+    }
+    
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension DropDownTableView: UIGestureRecognizerDelegate {
+    
+    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // If OwnerView is nil means that the DropDown is not been added so the touch is acceptable
+        guard let dropDownOnwerView = ownerView as? UIView else { return true }
+        
+        // If the OnwerView is not nil, we need to evaluate if it is inside or outside
+        let isInSelf = touch.isInside(view: self)
+        let isInOnwer = touch.isInside(view: dropDownOnwerView)
+        return !isInOnwer && !isInSelf
+    }
+}

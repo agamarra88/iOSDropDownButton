@@ -28,6 +28,7 @@
 		6926F17224A961CE00462DAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6926F17124A961CE00462DAD /* Assets.xcassets */; };
 		694A5F5623E009250096C188 /* AppereanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F5523E009250096C188 /* AppereanceManager.swift */; };
 		6995021524AAEF0B007373F2 /* UITouch+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6995021424AAEF0B007373F2 /* UITouch+UIView.swift */; };
+		6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6995021624AB0E78007373F2 /* UIView+UIViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,7 @@
 		697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownTableView.swift; sourceTree = "<group>"; };
 		697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownDefinitions.swift; sourceTree = "<group>"; };
 		6995021424AAEF0B007373F2 /* UITouch+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITouch+UIView.swift"; sourceTree = "<group>"; };
+		6995021624AB0E78007373F2 /* UIView+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+UIViewController.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				6995021424AAEF0B007373F2 /* UITouch+UIView.swift */,
+				6995021624AB0E78007373F2 /* UIView+UIViewController.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6926F16724A9611500462DAD /* DropDownButton.swift in Sources */,
+				6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */,
 				6926F16924A9611500462DAD /* UITapClosureGestureRecognizer.swift in Sources */,
 				6926F16624A9611500462DAD /* DropDownViewable.swift in Sources */,
 				6926F16A24A9611500462DAD /* DropDownDefinitions.swift in Sources */,

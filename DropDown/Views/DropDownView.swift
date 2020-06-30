@@ -83,21 +83,8 @@ import UIKit
             dropDownView.separatorStyle = separatorStyle
         }
     }
-    @objc public dynamic var dismissOption: DropDownDismissOption = .automatic
     
     // MARK: - Properties
-    public var whenShowScrollToSelection:Bool = false
-    public var showDirection: DropDownDirection = .down {
-        didSet {
-//            showDirectionChanged()
-        }
-    }
-    public var isShowing: Bool = false {
-        didSet {
-//            isShowingChanged()
-        }
-    }
-    
     weak public var delegate:DropDownViewDelegate?
     public var selectedItemAction: dropDownSelectedItemAction?
     
