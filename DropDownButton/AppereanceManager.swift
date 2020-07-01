@@ -18,6 +18,7 @@ struct AppearanceManager {
         dropDownButton.borderWidth = 1
         dropDownButton.borderColor = .lightGray
         dropDownButton.separatorStyle = .none
+//        dropDownButton.dropDownOffset = 40
         
     }
 

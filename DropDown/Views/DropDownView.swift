@@ -63,11 +63,6 @@ import UIKit
             dropDownView.shadowRadius = shadowRadius
         }
     }
-    @IBInspectable public dynamic var dropDownOffset:CGFloat = 0 {
-        didSet {
-            dropDownOffsetChanged()
-        }
-    }
     @IBInspectable public dynamic var arrowImage: UIImage? {
         didSet {
             arrowImageView?.image = arrowImage
@@ -78,28 +73,25 @@ import UIKit
             arrowImageView?.contentMode = arrowImageContentMode
         }
     }
-    @objc dynamic public var separatorStyle:UITableViewCell.SeparatorStyle = .singleLine {
+    @objc dynamic public var separatorStyle: UITableViewCell.SeparatorStyle = .singleLine {
         didSet {
             dropDownView.separatorStyle = separatorStyle
+        }
+    }
+    @IBInspectable public dynamic var dropDownOffset: CGFloat {
+        get {
+            dropDownView.offset
+        }
+        set {
+            dropDownView.offset = newValue
         }
     }
     
     // MARK: - Properties
     weak public var delegate:DropDownViewDelegate?
     public var selectedItemAction: dropDownSelectedItemAction?
-    
     public var dropDownView: DropDownTableView
     public var arrowImageView: UIImageView?
-    public var elements: [DropDownItemable] = [] {
-        didSet {
-            elementsChanged()
-        }
-    }
-    public var selectedElement:DropDownItemable? {
-        didSet {
-            selectedElementchanged(fromOldValue: oldValue)
-        }
-    }
     
     // MARK: - Constructors
     public override init(frame: CGRect) {

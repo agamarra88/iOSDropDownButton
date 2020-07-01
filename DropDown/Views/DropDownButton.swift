@@ -93,11 +93,6 @@ public class UIClosureButton: UIButton {
             dropDownView.shadowRadius = shadowRadius
         }
     }
-    @IBInspectable public dynamic var dropDownOffset: CGFloat = 0 {
-        didSet {
-            dropDownOffsetChanged()
-        }
-    }
     @IBInspectable public dynamic var arrowImage: UIImage? {
         didSet {
             arrowImageView?.image = arrowImage
@@ -113,28 +108,34 @@ public class UIClosureButton: UIButton {
             dropDownView.separatorStyle = separatorStyle
         }
     }
+    @IBInspectable public dynamic var dropDownOffset: CGFloat {
+        get {
+            dropDownView.offset
+        }
+        set {
+            dropDownView.offset = newValue
+        }
+    }
     
     // MARK: - Properties
     private var placeholder: String = ""
     
     public weak var delegate:DropDownViewDelegate?
     public var selectedItemAction: dropDownSelectedItemAction?
-    
     public var dropDownView: DropDownTableView
     public var arrowImageView: UIImageView?
-    public var elements: [DropDownItemable] = [] {
-        didSet {
-            elementsChanged()
+    
+    public var selectedElement: DropDownItemable? {
+        get {
+            dropDownView.selectedElement
         }
-    }
-    public var selectedElement:DropDownItemable? {
-        didSet {
+        set {
+            dropDownView.select(item: newValue, animated: false)
             if let element = selectedElement {
                 setTitle(element.description, for: .normal)
             } else {
                 setTitle(placeholder, for: .normal)
             }
-            selectedElementchanged(fromOldValue: oldValue)
         }
     }
     

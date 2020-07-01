@@ -39,22 +39,21 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     var shadowOpacity: CGFloat { get set }
     var shadowOffset: CGSize { get set }
     var shadowRadius: CGFloat { get set }
-    var dropDownOffset: CGFloat { get set }
     var arrowImage: UIImage? { get set }
     var arrowImageContentMode: UIView.ContentMode { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
+    var dropDownOffset: CGFloat { get set }
     
     var dismissOption: DropDownDismissOption { get set }
     var direction: DropDownDirection { get }
     var isShowing: Bool { get }
+    var elements: [DropDownItemable] { get set }
+    var selectedElement:DropDownItemable? { get set }
     
     var delegate:DropDownViewDelegate? { get set }
     var selectedItemAction: dropDownSelectedItemAction? { get set }
-    
-    var arrowImageView: UIImageView? { get set }
     var dropDownView: DropDownTableView { get set }
-    var elements: [DropDownItemable] { get set }
-    var selectedElement:DropDownItemable? { get set }
+    var arrowImageView: UIImageView? { get set }
     
     func showDropDown()
     func dismissDropDown()
@@ -62,6 +61,15 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
 
 // MARK: - Internal - For Properties Observers
 extension DropDownViewable {
+    
+    public var dropDownOffset: CGFloat {
+        get {
+            dropDownView.offset
+        }
+        set {
+            dropDownView.offset = newValue
+        }
+    }
     
     public var dismissOption: DropDownDismissOption {
         get {
@@ -76,40 +84,32 @@ extension DropDownViewable {
         get {
             dropDownView.direction
         }
-        set {
-            dropDownView.direction = newValue
-        }
     }
     
     public var isShowing: Bool {
         get {
             dropDownView.isShowing
         }
+    }
+    
+    public var elements: [DropDownItemable] {
+        get {
+            dropDownView.elements
+        }
         set {
-            dropDownView.isShowing = newValue
+            dropDownView.elements = newValue
+            dropDownView.reload()
         }
     }
     
-    func dropDownOffsetChanged() {
-        guard let constraints = dropDownView.superview?.constraints else { return }
-        
-        let attribute: NSLayoutConstraint.Attribute = direction == .down ? .top : .bottom
-        let verticalConstraint = constraints.first(where: {
-            return $0.secondItem is DropDownView && $0.firstAttribute == attribute
-        })
-        verticalConstraint?.constant = dropDownOffset
+    public var selectedElement: DropDownItemable? {
+        get {
+            dropDownView.selectedElement
+        }
+        set {
+            dropDownView.select(item: newValue, animated: false)
+        }
     }
-    
-    func elementsChanged() {
-        dropDownView.elements = elements
-        dropDownView.reload()
-    }
-    
-    func selectedElementchanged(fromOldValue oldValue:DropDownItemable?) {
-        dropDownView.select(item: selectedElement, animated: false)
-        dropDownView.whenShowScrollToSelection = oldValue == nil
-    }
-    
 }
 
 // MARK: - Internal - Setups
@@ -161,7 +161,6 @@ extension DropDownViewable where Self: UIView {
             dropDownView.attach(to: self)
         }
         
-        dropDownView.elements = elements
         dropDownView.selectedItemAction = { [unowned self] (item, index) in
             self.selectedElement = item
             self.selectedItemAction?(item, index)

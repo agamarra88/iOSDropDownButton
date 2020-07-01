@@ -54,10 +54,15 @@ public class DropDownTableView: UIView {
             layer.shadowRadius = shadowRadius
         }
     }
-    public var dismissOption: DropDownDismissOption = .automatic
-    public var direction: DropDownDirection = .down {
+    public var offset: CGFloat = 0 {
         didSet {
-            tableView.layer.maskedCorners = direction == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            guard let constraints = superview?.constraints else { return }
+            
+            let attribute: NSLayoutConstraint.Attribute = direction == .down ? .top : .bottom
+            let verticalConstraint = constraints.first(where: {
+                return $0.secondItem is DropDownView && $0.firstAttribute == attribute
+            })
+            verticalConstraint?.constant = offset
         }
     }
     public var isShowing: Bool = false {
@@ -65,17 +70,27 @@ public class DropDownTableView: UIView {
             backgroundTapGesture?.isEnabled = isShowing
         }
     }
-    public var whenShowScrollToSelection: Bool = false
-    public var tableView: UITableView!
-    public var elements: [DropDownItemable] = []
-    public var selectedItemAction: dropDownSelectedItemAction?
+    public var direction: DropDownDirection = .down {
+        didSet {
+            tableView.layer.maskedCorners = direction == .down ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
+    }
+    public var dismissOption: DropDownDismissOption = .automatic
     
-    var dropDownOffset: CGFloat = 0
+    public var selectedItemAction: dropDownSelectedItemAction?
+    public var elements: [DropDownItemable] = []
+    public var selectedElement: DropDownItemable? {
+        didSet {
+            whenShowScrollToSelection = oldValue == nil
+        }
+    }
     
     // MARK: - Properties - Private
     private weak var ownerView: DropDownViewable?
+    private var tableView: UITableView!
     private var heightConstraint: NSLayoutConstraint?
     private var backgroundTapGesture: UITapClosureGestureRecognizer?
+    private var whenShowScrollToSelection: Bool = false
     private var maskedCorners: CACornerMask = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] {
         didSet {
             tableView.layer.maskedCorners = maskedCorners
@@ -162,7 +177,8 @@ public extension DropDownTableView {
         }
     }
     
-    func select(item:DropDownItemable?, animated:Bool) {
+    func select(item: DropDownItemable?, animated: Bool) {
+        selectedElement = item
         if let selectedItem = item {
             // Select a row
             guard let row = elements.firstIndex(where: { return selectedItem.isEqual(to: $0) }) else {
@@ -223,7 +239,7 @@ extension DropDownTableView {
     
     fileprivate func canShowDropDown(in superView: UIView, from attachedView: UIView) -> Bool {
         let pontInSuperView = superView.convert(attachedView.frame.origin, to: nil)
-        let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownViewHeight + dropDownOffset
+        let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownViewHeight + offset
         return superView.frame.height > finalHeight
     }
     
@@ -234,9 +250,9 @@ extension DropDownTableView {
         // Define vertical constraint according to the direction
         var verticalConstraint: NSLayoutConstraint
         if direction == .down {
-            verticalConstraint = topAnchor.constraint(equalTo: view.bottomAnchor, constant: dropDownOffset)
+            verticalConstraint = topAnchor.constraint(equalTo: view.bottomAnchor, constant: offset)
         } else {
-            verticalConstraint = bottomAnchor.constraint(equalTo: view.topAnchor, constant: -dropDownOffset)
+            verticalConstraint = bottomAnchor.constraint(equalTo: view.topAnchor, constant: -offset)
         }
         
         // Add Constratins
@@ -343,8 +359,8 @@ extension DropDownTableView: UITableViewDataSource {
 extension DropDownTableView: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = elements[indexPath.row]
-        selectedItemAction?(item, indexPath.row)
+        selectedElement = elements[indexPath.row]
+        selectedItemAction?(selectedElement!, indexPath.row)
     }
     
 }
