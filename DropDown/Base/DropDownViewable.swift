@@ -43,6 +43,7 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     var arrowImageContentMode: UIView.ContentMode { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
     var dropDownOffset: CGFloat { get set }
+    var dropDownRowsToDisplay: Int { get set }
     
     var dismissOption: DropDownDismissOption { get set }
     var direction: DropDownDirection { get }
@@ -59,7 +60,7 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     func dismissDropDown()
 }
 
-// MARK: - Internal - For Properties Observers
+// MARK: - Public - Properties Override
 extension DropDownViewable {
     
     public var dropDownOffset: CGFloat {
@@ -68,6 +69,15 @@ extension DropDownViewable {
         }
         set {
             dropDownView.offset = newValue
+        }
+    }
+    
+    public var dropDownRowsToDisplay: Int {
+        get {
+            dropDownView.rowToDisplay
+        }
+        set {
+            dropDownView.rowToDisplay = newValue
         }
     }
     
@@ -112,8 +122,8 @@ extension DropDownViewable {
     }
 }
 
-// MARK: - Internal - Setups
-extension DropDownViewable where Self: UIView {
+// MARK: - Public - Setups
+public extension DropDownViewable where Self: UIView {
     
     func setupDropDownViewable() {
         clipsToBounds = true
@@ -174,13 +184,14 @@ extension DropDownViewable where Self: UIView {
     
 }
 
-// MARK: - Public
+// MARK: - Public - Actions
 public extension DropDownViewable where Self: UIView {
     
     func didTapped() {
         // Add constraints if needed
         dropDownView.attach(to: self)
         
+        UIApplication.shared.windows.first?.endEditing(true)
         if !dropDownView.isShowing {
             showDropDown()
         } else {

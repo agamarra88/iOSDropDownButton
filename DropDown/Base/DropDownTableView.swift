@@ -76,6 +76,7 @@ public class DropDownTableView: UIView {
         }
     }
     public var dismissOption: DropDownDismissOption = .automatic
+    public var rowToDisplay: Int = DropDownConstants.numberOfRowsToDisplay
     
     public var selectedItemAction: dropDownSelectedItemAction?
     public var elements: [DropDownItemable] = []
@@ -109,8 +110,17 @@ public class DropDownTableView: UIView {
         setupView()
         setupTableView()
     }
+}
+
+// MARK: - Private
+fileprivate extension DropDownTableView {
     
-    // MARK: - Private
+    var dropDownViewHeight: CGFloat {
+        let factor = elements.count < rowToDisplay ? elements.count : rowToDisplay
+        let height = tableView.rowHeight != UITableView.automaticDimension ? tableView.rowHeight : tableView.estimatedRowHeight
+        return CGFloat(factor) * height // TODO: Improve calculation
+    }
+    
     private func setupView() {
         backgroundColor = .clear
         layer.shadowColor = shadowColor.cgColor
@@ -140,6 +150,7 @@ public class DropDownTableView: UIView {
         registerReusable(cell: UITableViewCell.self)
     }
 }
+
 
 // MARK: - Public - Register Cells
 public extension DropDownTableView {
@@ -217,7 +228,7 @@ extension DropDownTableView {
         viewController.view.addSubview(self)
         
         // Add the dropdown to the ViewController view and set constraitns
-        direction = canShowDropDown(in: viewController.view, from: view) ? .down : .up
+        direction = direction(in: viewController.view, displayingFrom: view)
         constraint(to: view, forDirection: direction)
         registerDismissGesture(to: viewController.view)
         
@@ -225,16 +236,10 @@ extension DropDownTableView {
         layoutIfNeeded()
     }
     
-    fileprivate func canShowDropDown(in superView: UIView, from attachedView: UIView) -> Bool {
-        let pontInSuperView = superView.convert(attachedView.frame.origin, to: nil)
+    fileprivate func direction(in superView: UIView, displayingFrom attachedView: UIView) -> DropDownDirection {
+        let pontInSuperView = attachedView.convert(attachedView.frame.origin, to: superView)
         let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownViewHeight + offset
-        return superView.frame.height > finalHeight
-    }
-    
-    fileprivate var dropDownViewHeight: CGFloat {
-        let factor = elements.count < DropDownConstants.numberOfRowsToShow ? elements.count : DropDownConstants.numberOfRowsToShow
-        let height = tableView.rowHeight != UITableView.automaticDimension ? tableView.rowHeight : tableView.estimatedRowHeight
-        return CGFloat(factor) * height // TODO: Improve calculation
+        return superView.frame.height > finalHeight ? .down : .up
     }
     
     fileprivate func constraint(to view: UIView, forDirection direction: DropDownDirection) {
@@ -275,10 +280,10 @@ extension DropDownTableView {
     }
 }
 
-// MARK: - Dismiss & Show
-extension DropDownTableView {
+// MARK: - Public - Dismiss & Show
+public extension DropDownTableView {
     
-    public func show(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
+    func show(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
         isShowing = true
         
         // Scroll to Selected Item
@@ -301,7 +306,7 @@ extension DropDownTableView {
             }, completion: completion)
     }
     
-    public func dismiss(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
+    func dismiss(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
         isShowing = false
         whenShowScrollToSelection = false
         
@@ -320,8 +325,6 @@ extension DropDownTableView {
             }, completion: completion)
     }
 }
-
-
 
 // MARK: - UITableViewDataSource
 extension DropDownTableView: UITableViewDataSource {

@@ -40,6 +40,7 @@ class ViewController: UIViewController {
         dropDownButton.delegate = self
         
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
+        dropDownButton2.dropDownRowsToDisplay = 3
 //        dropDownButton2.dismissOption = .manual
         dropDownButton2.selectedItemAction = { (item, _) in
             print(item)

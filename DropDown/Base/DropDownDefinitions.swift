@@ -14,7 +14,7 @@ public typealias dropDownSelectedItemAction = (DropDownItemable, Int) -> Void
 // MARK: - Constants
 enum DropDownConstants {
     
-    static let numberOfRowsToShow = 3
+    static let numberOfRowsToDisplay = 3
     static let imageViewWidth: CGFloat = 40
     
 }

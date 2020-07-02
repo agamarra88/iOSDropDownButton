@@ -116,6 +116,14 @@ public class UIClosureButton: UIButton {
             dropDownView.offset = newValue
         }
     }
+    @IBInspectable public dynamic var dropDownRowsToDisplay: Int {
+        get {
+            dropDownView.rowToDisplay
+        }
+        set {
+            dropDownView.rowToDisplay = newValue
+        }
+    }
     
     // MARK: - Properties
     private var placeholder: String = ""
