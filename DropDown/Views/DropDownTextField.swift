@@ -15,7 +15,7 @@ public protocol DropDownTextFieldDelegate: class {
 }
 
 public extension DropDownTextFieldDelegate {
-     
+    
     func dropDown(_ sender:DropDownTextField, filterBy text:String) { }
     
 }
@@ -25,6 +25,7 @@ public extension DropDownTextFieldDelegate {
     public struct Configuration {
         
         public var isAutomatic = true
+        public var boldCoincidences = true // Works only if automatic is true
         public var ignoringCase = true
         public var trim = true
         
@@ -33,10 +34,16 @@ public extension DropDownTextFieldDelegate {
             return ignoringCase ? trimmedText?.lowercased() : trimmedText
         }
         
-        func does(text:String, contains str:String) -> Bool {
+        func does(text: String, contains str: String) -> Bool {
             let aText = ignoringCase ? text.lowercased() : text
             let aStr = ignoringCase ? str.lowercased() : str
             return aText.contains(aStr)
+        }
+        
+        func range(inText text: String, of str: String) -> Range<String.Index>? {
+            let aText = ignoringCase ? text.lowercased() : text
+            let aStr = ignoringCase ? str.lowercased() : str
+            return aText.range(of: aStr)
         }
     }
     
@@ -175,6 +182,7 @@ private extension DropDownTextField {
     
     func setupView() {
         setupDropDownViewable()
+        dropDownView.registerReusable(cell: HighLightTableViewCell.self)
         addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
         addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
     }
@@ -200,12 +208,8 @@ private extension DropDownTextField {
             
             // If configuration is automatic filter by descripcion
             if self.configuration.isAutomatic {
-                if text.isEmpty {
-                    self.reloadDropDown(by: self.elements)
-                } else {
-                    let filtered = self.elements.filter { self.configuration.does(text: $0.description, contains: text) }
-                    self.reloadDropDown(by: filtered)
-                }
+                let filtered = !text.isEmpty ? self.filterElements(byText: text) : self.elements
+                self.reloadDropDown(by: filtered)
             }
             
             // Call Delegates and Actions
@@ -214,10 +218,20 @@ private extension DropDownTextField {
         })
     }
     
+    func filterElements(byText text: String) -> [DropDownItemable] {
+        if configuration.boldCoincidences {
+            return self.elements.compactMap { (element) ->  ElementHighLight? in
+                guard let range = configuration.range(inText: element.description, of: text) else { return nil }
+                return ElementHighLight(element: element, range: range)
+            }
+            
+        } else {
+            return self.elements.filter({ configuration.does(text: $0.description, contains: text) })
+        }
+    }
+    
     func reloadDropDown(by elements:[DropDownItemable]) {
         self.dropDownView.elements = elements
         self.dropDownView.reload(keepSelection: false)
     }
 }
-
-
