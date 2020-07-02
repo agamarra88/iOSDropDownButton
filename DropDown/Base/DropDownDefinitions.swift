@@ -56,6 +56,6 @@ public extension DropDownItemable where Self: Equatable {
 // MARK: - DropDownViewCellable
 public protocol DropDownViewCellable: class {
 
-    func configureBySetting(item:DropDownItemable)
+    func configureBy(item:DropDownItemable)
     
 }

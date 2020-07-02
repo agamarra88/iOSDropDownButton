@@ -35,7 +35,6 @@ class ViewController: UIViewController {
         }
         
         dropDownButton.registerReusable(nibCell: nib, withRowHeight: 80)
-//        dropDownButton.dismissOption = .manual
         dropDownButton.elements = accounts
         dropDownButton.selectedElement = accounts[2]
         dropDownButton.delegate = self

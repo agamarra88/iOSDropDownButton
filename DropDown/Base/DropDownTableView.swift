@@ -212,35 +212,29 @@ extension DropDownTableView {
         ownerView = view
         
         // Validate if view is attached. If the constraint is NILL then it is not attached
-        guard heightConstraint == nil else { return }
+        guard heightConstraint == nil, let viewController = view.viewController else { return }
         
-        let superView = bestSuperViewForDropDown(fromView: view)
-        superView.addSubview(self)
+        viewController.view.addSubview(self)
         
         // Add the dropdown to the ViewController view and set constraitns
-        direction = canShowDropDown(in: superView, from: view) ? .down : .up
+        direction = canShowDropDown(in: viewController.view, from: view) ? .down : .up
         constraint(to: view, forDirection: direction)
-        registerDismissGesture(to: view)
+        registerDismissGesture(to: viewController.view)
         
         // Forcing the layout because then an animation will come. With this the view will be located in the right place for the animation
         layoutIfNeeded()
-    }
-    
-    fileprivate func bestSuperViewForDropDown(fromView view: UIView) -> UIView {
-        var parentView = view
-        while !canShowDropDown(in: parentView, from: view) {
-            guard let superview = parentView.superview else {
-                return parentView
-            }
-            parentView = superview
-        }
-        return parentView
     }
     
     fileprivate func canShowDropDown(in superView: UIView, from attachedView: UIView) -> Bool {
         let pontInSuperView = superView.convert(attachedView.frame.origin, to: nil)
         let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownViewHeight + offset
         return superView.frame.height > finalHeight
+    }
+    
+    fileprivate var dropDownViewHeight: CGFloat {
+        let factor = elements.count < DropDownConstants.numberOfRowsToShow ? elements.count : DropDownConstants.numberOfRowsToShow
+        let height = tableView.rowHeight != UITableView.automaticDimension ? tableView.rowHeight : tableView.estimatedRowHeight
+        return CGFloat(factor) * height // TODO: Improve calculation
     }
     
     fileprivate func constraint(to view: UIView, forDirection direction: DropDownDirection) {
@@ -272,18 +266,12 @@ extension DropDownTableView {
                     weakself.ownerView?.dismissDropDown()
                 }
             })
+            backgroundTapGesture?.cancelsTouchesInView = false
             backgroundTapGesture?.delegate = self
             
-            let parentView = superView.viewController?.view
-            parentView?.isUserInteractionEnabled = true
-            parentView?.addGestureRecognizer(backgroundTapGesture!)
+            superView.isUserInteractionEnabled = true
+            superView.addGestureRecognizer(backgroundTapGesture!)
         }
-    }
-    
-    var dropDownViewHeight: CGFloat {
-        let factor = elements.count < DropDownConstants.numberOfRowsToShow ? elements.count : DropDownConstants.numberOfRowsToShow
-        let height = tableView.rowHeight != UITableView.automaticDimension ? tableView.rowHeight : tableView.estimatedRowHeight
-        return CGFloat(factor) * height // TODO: Improve calculation
     }
 }
 
@@ -346,7 +334,7 @@ extension DropDownTableView: UITableViewDataSource {
         let item = elements[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         if let customCell = cell as? DropDownViewCellable {
-            customCell.configureBySetting(item: item)
+            customCell.configureBy(item: item)
         } else {
             cell.textLabel?.text = item.description
         }
@@ -376,13 +364,17 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
         return true
     }
     
+    // If false the background gesture won't work; if true it will get fired
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        // If OwnerView is nil means that the DropDown is not been added so the touch is acceptable
-        guard let dropDownOnwerView = ownerView as? UIView else { return true }
         
-        // If the OnwerView is not nil, we need to evaluate if it is inside or outside
-        let isInSelf = touch.isInside(view: self)
-        let isInOnwer = touch.isInside(view: dropDownOnwerView)
-        return !isInOnwer && !isInSelf
+        // If the touch occurs in a DropDownViewable
+        // The background gesture is enable if isShowing is false.
+        if let ownerView = touch.view as? DropDownViewable {
+            return !ownerView.isShowing
+        }
+        
+        // If the touch occurs in a DropDownTableView
+        let dropDownView = touch.view?.superView(of: DropDownTableView.self)
+        return dropDownView == nil
     }
 }

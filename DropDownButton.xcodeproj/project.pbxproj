@@ -26,8 +26,8 @@
 		6926F16A24A9611500462DAD /* DropDownDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */; };
 		6926F16B24A9611500462DAD /* DropDownTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */; };
 		6926F17224A961CE00462DAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6926F17124A961CE00462DAD /* Assets.xcassets */; };
+		6936FF9224AD90D30051AF4A /* UIView+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936FF9124AD90D30051AF4A /* UIView+Helper.swift */; };
 		694A5F5623E009250096C188 /* AppereanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F5523E009250096C188 /* AppereanceManager.swift */; };
-		6995021524AAEF0B007373F2 /* UITouch+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6995021424AAEF0B007373F2 /* UITouch+UIView.swift */; };
 		6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6995021624AB0E78007373F2 /* UIView+UIViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -72,13 +72,13 @@
 		6926F15B24A9610800462DAD /* DropDown.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DropDown.h; sourceTree = "<group>"; };
 		6926F15C24A9610800462DAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6926F17124A961CE00462DAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6936FF9124AD90D30051AF4A /* UIView+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Helper.swift"; sourceTree = "<group>"; };
 		694A5F3223DF8F9A0096C188 /* DropDownViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownViewable.swift; sourceTree = "<group>"; };
 		694A5F3423DF9CB90096C188 /* UITapClosureGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapClosureGestureRecognizer.swift; sourceTree = "<group>"; };
 		694A5F5323DFEF110096C188 /* DropDownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownView.swift; sourceTree = "<group>"; };
 		694A5F5523E009250096C188 /* AppereanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppereanceManager.swift; sourceTree = "<group>"; };
 		697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownTableView.swift; sourceTree = "<group>"; };
 		697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownDefinitions.swift; sourceTree = "<group>"; };
-		6995021424AAEF0B007373F2 /* UITouch+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITouch+UIView.swift"; sourceTree = "<group>"; };
 		6995021624AB0E78007373F2 /* UIView+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+UIViewController.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -205,8 +205,8 @@
 		6995021324AAEEEF007373F2 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				6995021424AAEF0B007373F2 /* UITouch+UIView.swift */,
 				6995021624AB0E78007373F2 /* UIView+UIViewController.swift */,
+				6936FF9124AD90D30051AF4A /* UIView+Helper.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -343,10 +343,10 @@
 				6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */,
 				6926F16924A9611500462DAD /* UITapClosureGestureRecognizer.swift in Sources */,
 				6926F16624A9611500462DAD /* DropDownViewable.swift in Sources */,
+				6936FF9224AD90D30051AF4A /* UIView+Helper.swift in Sources */,
 				6926F16A24A9611500462DAD /* DropDownDefinitions.swift in Sources */,
 				6926F16B24A9611500462DAD /* DropDownTableView.swift in Sources */,
 				6926F16824A9611500462DAD /* DropDownView.swift in Sources */,
-				6995021524AAEF0B007373F2 /* UITouch+UIView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

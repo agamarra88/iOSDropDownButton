@@ -20,7 +20,7 @@ class AccountCell: UITableViewCell {
 
 extension AccountCell: DropDownViewCellable {
     
-    func configureBySetting(item: DropDownItemable) {
+    func configureBy(item: DropDownItemable) {
         guard let account = item as? Account else { return }
         
         accountLabel.text = account.number
