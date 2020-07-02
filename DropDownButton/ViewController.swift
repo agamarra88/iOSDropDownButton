@@ -47,11 +47,22 @@ class ViewController: UIViewController {
             print(item)
         }
         
-        dropDowntextField.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
+        let allText =  ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
+        dropDowntextField.elements = allText
         dropDowntextField.placeholder = "Select One"
+//        dropDowntextField.configuration.isAutomatic = false
+//        dropDowntextField.configuration.ignoringCase = false
+//        dropDowntextField.configuration.trim = false
         dropDowntextField.selectedItemAction = { item, _ in
             
         }
+//        dropDowntextField.filterAction = { [unowned self] text in
+//            if text.isEmpty {
+//                self.dropDowntextField.elements = allText
+//            } else {
+//                self.dropDowntextField.elements = allText.filter({ $0.lowercased().contains(text) })
+//            }
+//        }
     }
 }
 

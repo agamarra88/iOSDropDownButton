@@ -10,6 +10,7 @@ import UIKit
 
 // MARK: - Definitions
 public typealias DropDownSelectedItemAction = (DropDownItemable, Int) -> Void
+public typealias DropDownFilterItemAction = (String) -> Void
 
 // MARK: - Constants
 enum DropDownConstants {

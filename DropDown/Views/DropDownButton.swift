@@ -169,7 +169,7 @@ public class UIClosureButton: UIButton {
         setupDropDownViewable()
         
         placeholder = titleLabel?.text ?? ""
-        touchUpInsideAction = { [unowned self] sender in
+        touchUpInsideAction = { [unowned self] _ in
             self.didTapped()
         }
     }

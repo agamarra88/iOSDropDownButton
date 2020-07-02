@@ -167,6 +167,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" id="Usf-0I-xW0"/>
                     <connections>
                         <outlet property="accountLabel" destination="yXu-MZ-iWm" id="xOG-3n-iYP"/>
                         <outlet property="amountLabel" destination="mNd-Du-8E9" id="krm-6v-wyn"/>
@@ -178,7 +179,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="137.68115942028987" y="137.94642857142856"/>
+            <point key="canvasLocation" x="1047.8260869565217" y="137.94642857142856"/>
         </scene>
     </scenes>
 </document>

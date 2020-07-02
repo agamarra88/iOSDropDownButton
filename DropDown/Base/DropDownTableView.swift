@@ -121,7 +121,7 @@ fileprivate extension DropDownTableView {
         return CGFloat(factor) * height // TODO: Improve calculation
     }
     
-    private func setupView() {
+    func setupView() {
         backgroundColor = .clear
         layer.shadowColor = shadowColor.cgColor
         layer.shadowOpacity = Float(shadowOpacity)
@@ -129,7 +129,7 @@ fileprivate extension DropDownTableView {
         layer.shadowRadius = shadowRadius
     }
     
-    private func setupTableView() {
+    func setupTableView() {
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.clipsToBounds = true
