@@ -128,8 +128,8 @@ public class UIClosureButton: UIButton {
     // MARK: - Properties
     private var placeholder: String = ""
     
-    public weak var delegate:DropDownViewDelegate?
-    public var selectedItemAction: dropDownSelectedItemAction?
+    public weak var dropDownDelegate: DropDownViewDelegate?
+    public var selectedItemAction: DropDownSelectedItemAction?
     public var dropDownView: DropDownTableView
     public var arrowImageView: UIImageView?
     

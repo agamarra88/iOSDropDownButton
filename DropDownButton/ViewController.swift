@@ -11,6 +11,7 @@ import DropDown
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var dropDowntextField: DropDownTextField!
     @IBOutlet weak var dropDownButton: DropDownButton!
     @IBOutlet weak var dropDownButton2: DropDownButton!
     @IBOutlet weak var dropDownView: DropDownView!
@@ -37,13 +38,19 @@ class ViewController: UIViewController {
         dropDownButton.registerReusable(nibCell: nib, withRowHeight: 80)
         dropDownButton.elements = accounts
         dropDownButton.selectedElement = accounts[2]
-        dropDownButton.delegate = self
+        dropDownButton.dropDownDelegate = self
         
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDownButton2.dropDownRowsToDisplay = 3
 //        dropDownButton2.dismissOption = .manual
         dropDownButton2.selectedItemAction = { (item, _) in
             print(item)
+        }
+        
+        dropDowntextField.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
+        dropDowntextField.placeholder = "Select One"
+        dropDowntextField.selectedItemAction = { item, _ in
+            
         }
     }
 }

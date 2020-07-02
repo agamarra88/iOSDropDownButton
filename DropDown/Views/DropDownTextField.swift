@@ -1,14 +1,14 @@
 //
-//  DropDownView.swift
-//  DropDownButton
+//  DropDownTextField.swift
+//  DropDown
 //
-//  Created by Arturo Gamarra on 1/27/20.
-//  Copyright © 2020 Abstract. All rights reserved.
+//  Created by Arturo Gamarra on 7/2/20.
+//  Copyright © 2020 Vector. All rights reserved.
 //
 
 import UIKit
 
-@IBDesignable public class DropDownView: UIView, DropDownViewable {
+@IBDesignable public class DropDownTextField: UITextField, DropDownViewable {
     
     // MARK: - Properties - Inspectables & Configuration
     @IBInspectable public dynamic var cornerRadius: CGFloat = 0 {
@@ -25,7 +25,7 @@ import UIKit
             layer.borderWidth = borderWidth
         }
     }
-    @IBInspectable public dynamic var borderColor: UIColor = .clear {
+    @IBInspectable public  dynamic var borderColor: UIColor = .clear {
         willSet {
             dropDownBorderColor = newValue
         }
@@ -58,7 +58,7 @@ import UIKit
             dropDownView.shadowOffset = shadowOffset
         }
     }
-    @IBInspectable public dynamic var shadowRadius:CGFloat = 0 {
+    @IBInspectable public dynamic var shadowRadius: CGFloat = 0 {
         didSet {
             dropDownView.shadowRadius = shadowRadius
         }
@@ -96,10 +96,21 @@ import UIKit
     }
     
     // MARK: - Properties
-    weak public var dropDownDelegate :DropDownViewDelegate?
+    weak public var dropDownDelegate: DropDownViewDelegate?
     public var selectedItemAction: DropDownSelectedItemAction?
     public var dropDownView: DropDownTableView
     public var arrowImageView: UIImageView?
+    
+    public var selectedElement: DropDownItemable? {
+        get {
+            dropDownView.selectedElement
+        }
+        set {
+            dropDownView.select(item: newValue, animated: false)
+            text = dropDownView.selectedElement?.description
+            let _ = resignFirstResponder()
+        }
+    }
     
     // MARK: - Constructors
     public override init(frame: CGRect) {
@@ -107,7 +118,6 @@ import UIKit
         
         super.init(frame: frame)
         setupView()
-        setupArrowImageView()
     }
     
     public required init?(coder: NSCoder) {
@@ -115,20 +125,23 @@ import UIKit
         
         super.init(coder: coder)
         setupView()
-        setupArrowImageView()
     }
 }
 
 // MARK: - Private
-private extension DropDownView {
+private extension DropDownTextField {
     
     func setupView() {
-        let tapGesture = UITapClosureGestureRecognizer { _ in
-            self.didTapped()
-        }
-        addGestureRecognizer(tapGesture)
-        isUserInteractionEnabled = true
-        
         setupDropDownViewable()
+        addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
+    }
+    
+    @objc func editingDidBegin(_ sender: UITextField) {
+        dropDownView.attach(to: self)
+        if !dropDownView.isShowing {
+            showDropDown()
+        }
     }
 }
+
+

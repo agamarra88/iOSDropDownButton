@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol DropDownViewDelegate:class {
+public protocol DropDownViewDelegate: class {
     
     func dropDown(_ sender:DropDownViewable, didSelectItem item:DropDownItemable, atIndex index:Int)
     
@@ -51,8 +51,8 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     var elements: [DropDownItemable] { get set }
     var selectedElement:DropDownItemable? { get set }
     
-    var delegate:DropDownViewDelegate? { get set }
-    var selectedItemAction: dropDownSelectedItemAction? { get set }
+    var selectedItemAction: DropDownSelectedItemAction? { get set }
+    var dropDownDelegate: DropDownViewDelegate? { get set }
     var dropDownView: DropDownTableView { get set }
     var arrowImageView: UIImageView? { get set }
     
@@ -174,7 +174,7 @@ public extension DropDownViewable where Self: UIView {
         dropDownView.selectedItemAction = { [unowned self] (item, index) in
             self.selectedElement = item
             self.selectedItemAction?(item, index)
-            self.delegate?.dropDown(self, didSelectItem: item, atIndex: index)
+            self.dropDownDelegate?.dropDown(self, didSelectItem: item, atIndex: index)
             
             if self.dismissOption != .manual {
                 self.dismissDropDown()
@@ -218,7 +218,7 @@ public extension DropDownViewable where Self: UIView {
         // Manage corners
         layer.maskedCorners = dropDownView.direction == .down ? [.layerMinXMinYCorner, .layerMaxXMinYCorner] : [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
-        delegate?.dropDown(self, willShowWithDirection: self.dropDownView.direction)
+        dropDownDelegate?.dropDown(self, willShowWithDirection: self.dropDownView.direction)
         dropDownView.show(animations: { [unowned self] in
             // Rotate arrow view as aditional animation
             if self.arrowImageView != nil {
@@ -226,12 +226,12 @@ public extension DropDownViewable where Self: UIView {
             }
             
             }, completion: { [unowned self] _ in
-                self.delegate?.dropDown(self, didShowWithDirection: self.dropDownView.direction)
+                self.dropDownDelegate?.dropDown(self, didShowWithDirection: self.dropDownView.direction)
         })
     }
     
     func dismissDropDown() {
-        delegate?.dropDown(self, willDismissWithDirection: self.dropDownView.direction)
+        dropDownDelegate?.dropDown(self, willDismissWithDirection: self.dropDownView.direction)
         dropDownView.dismiss(animations: { [unowned self] in
             // Rotate arrow view
             if self.arrowImageView != nil {
@@ -242,7 +242,7 @@ public extension DropDownViewable where Self: UIView {
             self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
             
             }, completion: { [unowned self] _ in
-                self.delegate?.dropDown(self, didDismissWithDirection: self.dropDownView.direction)
+                self.dropDownDelegate?.dropDown(self, didDismissWithDirection: self.dropDownView.direction)
         })
     }
 }

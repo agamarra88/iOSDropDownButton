@@ -78,7 +78,7 @@ public class DropDownTableView: UIView {
     public var dismissOption: DropDownDismissOption = .automatic
     public var rowToDisplay: Int = DropDownConstants.numberOfRowsToDisplay
     
-    public var selectedItemAction: dropDownSelectedItemAction?
+    public var selectedItemAction: DropDownSelectedItemAction?
     public var elements: [DropDownItemable] = []
     public var selectedElement: DropDownItemable? {
         didSet {
@@ -369,6 +369,10 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
     
     // If false the background gesture won't work; if true it will get fired
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        
+        if touch.view?.canBecomeFirstResponder != true {
+            touch.window?.endEditing(true)
+        }
         
         // If the touch occurs in a DropDownViewable
         // The background gesture is enable if isShowing is false.

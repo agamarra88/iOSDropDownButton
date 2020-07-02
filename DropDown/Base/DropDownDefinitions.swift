@@ -9,7 +9,7 @@
 import UIKit
 
 // MARK: - Definitions
-public typealias dropDownSelectedItemAction = (DropDownItemable, Int) -> Void
+public typealias DropDownSelectedItemAction = (DropDownItemable, Int) -> Void
 
 // MARK: - Constants
 enum DropDownConstants {
