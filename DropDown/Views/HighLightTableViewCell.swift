@@ -22,7 +22,7 @@ struct ElementHighLight: DropDownItemable {
     }
 }
 
-class HighLightTableViewCell: UITableViewCell, DropDownViewCellable {
+final class HighLightTableViewCell: UITableViewCell, DropDownViewCellable {
     
     func configureBy(item: DropDownItemable) {        
         guard let font = textLabel?.font else { return }
@@ -30,16 +30,15 @@ class HighLightTableViewCell: UITableViewCell, DropDownViewCellable {
         let text = item.description
         let attributedText = NSMutableAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: font.pointSize)])
         
-        guard let element = item as? ElementHighLight else {
+        guard let element = item as? ElementHighLight
+            , let range = element.range else {
             textLabel?.attributedText = attributedText
             return
         }
 
-        if let range = element.range {
-            let boldFont = UIFont.systemFont(ofSize: font.pointSize, weight: .bold)
-            let nsRange = NSRange(range, in: text)
-            attributedText.addAttributes([.font: boldFont], range: nsRange)
-        }
+        let boldFont = UIFont.systemFont(ofSize: font.pointSize, weight: .bold)
+        let nsRange = NSRange(range, in: text)
+        attributedText.addAttributes([.font: boldFont], range: nsRange)
         textLabel?.attributedText = attributedText
     }
     

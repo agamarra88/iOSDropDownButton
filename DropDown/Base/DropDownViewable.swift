@@ -202,11 +202,15 @@ public extension DropDownViewable where Self: UIView {
         }
     }
     
-    func registerReusable(nibCell nib:UINib, withRowHeight rowHeight:CGFloat = UITableView.automaticDimension, estimatedRowHeight:CGFloat = 45) {
+    func registerReusable(nibCell nib:UINib,
+                          withRowHeight rowHeight:CGFloat = UITableView.automaticDimension,
+                          estimatedRowHeight:CGFloat = 45) {
         dropDownView.registerReusable(nibCell: nib, withRowHeight: rowHeight, estimatedRowHeight: estimatedRowHeight)
     }
     
-    func registerReusable(cell cellClass:AnyClass, withRowHeight rowHeight:CGFloat = UITableView.automaticDimension, estimatedRowHeight:CGFloat = 45) {
+    func registerReusable(cell cellClass:AnyClass,
+                          withRowHeight rowHeight:CGFloat = UITableView.automaticDimension,
+                          estimatedRowHeight:CGFloat = 45) {
         dropDownView.registerReusable(cell: cellClass, withRowHeight: rowHeight, estimatedRowHeight: estimatedRowHeight)
     }
     
