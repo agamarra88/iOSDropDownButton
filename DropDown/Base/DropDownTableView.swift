@@ -369,11 +369,6 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
     
     // If false the background gesture won't work; if true it will get fired
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        
-        if touch.view?.canBecomeFirstResponder != true {
-            touch.window?.endEditing(true)
-        }
-        
         // If the touch occurs in a DropDownViewable
         // The background gesture is enable if isShowing is false.
         if let ownerView = touch.view as? DropDownViewable {
@@ -381,7 +376,14 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
         }
         
         // If the touch occurs in a DropDownTableView
-        let dropDownView = touch.view?.superView(of: DropDownTableView.self)
-        return dropDownView == nil
+        if let _ = touch.view?.superView(of: DropDownTableView.self) {
+            return false
+        }
+        
+        // If is showing from a textfield do not dismiss when it scroll in the tableView
+        if touch.view?.canBecomeFirstResponder != true {
+            touch.window?.endEditing(true)
+        }
+        return true
     }
 }

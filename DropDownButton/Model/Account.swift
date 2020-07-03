@@ -9,7 +9,7 @@
 import Foundation
 import DropDown
 
-class Account: DropDownItemable {
+struct Account: DropDownItemable {
     
     var name:String = ""
     var number:String = ""

@@ -32,7 +32,7 @@ public class UIClosureButton: UIButton {
         addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
     }
     
-    @IBAction private func buttonTapped(_ sender:UIButton) {
+    @IBAction private func buttonTapped(_ sender: UIButton) {
         touchUpInsideAction?(sender)
     }
     
