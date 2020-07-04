@@ -43,6 +43,7 @@ public protocol DropDownViewable: class, UIGestureRecognizerDelegate {
     var arrowImageContentMode: UIView.ContentMode { get set }
     var separatorStyle: UITableViewCell.SeparatorStyle { get set }
     var dropDownOffset: CGFloat { get set }
+    var dropDownPreferredHeight: CGFloat { get set }
     var dropDownRowsToDisplay: Int { get set }
     
     var dismissOption: DropDownDismissOption { get set }
@@ -69,6 +70,15 @@ extension DropDownViewable {
         }
         set {
             dropDownView.offset = newValue
+        }
+    }
+    
+    public var dropDownPreferredHeight: CGFloat {
+        get {
+            dropDownView.preferredHeight
+        }
+        set {
+            dropDownView.preferredHeight = newValue
         }
     }
     

@@ -17,7 +17,7 @@ enum DropDownConstants {
     
     static let numberOfRowsToDisplay = 3
     static let imageViewWidth: CGFloat = 40
-    
+    static let defaultHeight: CGFloat =  UITableView.automaticDimension
 }
 
 public enum DropDownDirection {

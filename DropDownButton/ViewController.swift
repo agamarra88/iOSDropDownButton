@@ -42,13 +42,14 @@ class ViewController: UIViewController {
         
         dropDownButton2.elements = ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDownButton2.dropDownRowsToDisplay = 3
-//        dropDownButton2.dismissOption = .manual
+        dropDownButton2.dismissOption = .manual
         dropDownButton2.selectedItemAction = { (item, _) in
             print(item)
         }
         
         let allText =  ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDowntextField.elements = allText
+//        dropDowntextField.dropDownPreferredHeight = 300
         dropDowntextField.placeholder = "Select One"
 //        dropDowntextField.configuration.isAutomatic = false
 //        dropDowntextField.configuration.ignoringCase = false

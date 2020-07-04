@@ -76,7 +76,8 @@ public class DropDownTableView: UIView {
         }
     }
     public var dismissOption: DropDownDismissOption = .automatic
-    public var rowToDisplay: Int = DropDownConstants.numberOfRowsToDisplay
+    public var preferredHeight: CGFloat = DropDownConstants.defaultHeight   // If it is set default. The size will be calculated by RowToDisplay
+    public var rowToDisplay: Int = DropDownConstants.numberOfRowsToDisplay  // Helps to calculate the DropDownHeight
     
     public var selectedItemAction: DropDownSelectedItemAction?
     public var elements: [DropDownItemable] = []
@@ -87,7 +88,7 @@ public class DropDownTableView: UIView {
     }
     
     // MARK: - Properties - Private
-    private weak var ownerView: DropDownViewable?
+    private weak var ownerView: UIView?
     private var tableView: UITableView!
     private var heightConstraint: NSLayoutConstraint?
     private var backgroundTapGesture: UITapClosureGestureRecognizer?
@@ -115,7 +116,11 @@ public class DropDownTableView: UIView {
 // MARK: - Private
 fileprivate extension DropDownTableView {
     
-    var dropDownViewHeight: CGFloat {
+    var dropDownHeight: CGFloat {
+        return preferredHeight != DropDownConstants.defaultHeight ? preferredHeight : dynamicHeight
+    }
+    
+    var dynamicHeight: CGFloat {
         let factor = elements.count < rowToDisplay ? elements.count : rowToDisplay
         let height = tableView.rowHeight != UITableView.automaticDimension ? tableView.rowHeight : tableView.estimatedRowHeight
         return CGFloat(factor) * height // TODO: Improve calculation
@@ -219,7 +224,7 @@ public extension DropDownTableView {
 // MARK: - Attach to View
 extension DropDownTableView {
     
-    public func attach(to view: UIView & DropDownViewable) {
+    public func attach(to view: UIView) {
         ownerView = view
         
         // Validate if view is attached. If the constraint is NILL then it is not attached
@@ -238,7 +243,7 @@ extension DropDownTableView {
     
     fileprivate func direction(in superView: UIView, displayingFrom attachedView: UIView) -> DropDownDirection {
         let pontInSuperView = attachedView.convert(attachedView.frame.origin, to: superView)
-        let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownViewHeight + offset
+        let finalHeight = pontInSuperView.y + attachedView.frame.height + dropDownHeight + offset
         return superView.frame.height > finalHeight ? .down : .up
     }
     
@@ -263,13 +268,16 @@ extension DropDownTableView {
     }
     
     fileprivate func registerDismissGesture(to superView: UIView) {
-        if backgroundTapGesture == nil {
+        // Add background tapGesture if DismissOption is automatic
+        if backgroundTapGesture == nil && dismissOption == .automatic {
             
             backgroundTapGesture = UITapClosureGestureRecognizer(action: { [weak self] _ in
-                guard let weakself = self else { return }
-                if weakself.isShowing && weakself.dismissOption == .automatic {
-                    weakself.ownerView?.dismissDropDown()
+                guard let weakself = self
+                    , let ownerView = weakself.ownerView as? DropDownViewable
+                    , weakself.isShowing else {
+                        return
                 }
+                ownerView.dismissDropDown()
             })
             backgroundTapGesture?.cancelsTouchesInView = false
             backgroundTapGesture?.delegate = self
@@ -292,7 +300,7 @@ public extension DropDownTableView {
         }
         
         // Animate and show DropDownView (TableView)
-        heightConstraint?.constant = dropDownViewHeight
+        heightConstraint?.constant = dropDownHeight
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             
             // Execute other animations if needed
@@ -376,8 +384,8 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
         }
         
         // If the touch occurs in a DropDownTableView
-        if let _ = touch.view?.superView(of: DropDownTableView.self) {
-            return false
+        if let dropDownView = touch.view?.superView(of: DropDownTableView.self) {
+            return dropDownView != self
         }
         
         // If is showing from a textfield do not dismiss when it scroll in the tableView
