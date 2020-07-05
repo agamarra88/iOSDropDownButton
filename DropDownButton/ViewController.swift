@@ -54,8 +54,26 @@ class ViewController: UIViewController {
 //        dropDowntextField.configuration.isAutomatic = false
 //        dropDowntextField.configuration.ignoringCase = false
 //        dropDowntextField.configuration.trim = false
+        dropDowntextField.paging.pullToRefreshEnabled = true
+        dropDowntextField.paging.infiniteScrollEnabled = true
         dropDowntextField.selectedItemAction = { item, _ in
             
+        }
+        dropDowntextField.loadFirstPageAction = { textField, text in
+            OperationQueue().addOperation {
+                sleep(2)
+                OperationQueue.main.addOperation {
+                    self.dropDowntextField.stopLoading(type: .refresh)
+                }
+            }
+        }
+        dropDowntextField.loadNextPageAction = { textField, text in
+            OperationQueue().addOperation {
+                sleep(2)
+                OperationQueue.main.addOperation {
+                    self.dropDowntextField.stopLoading(type: .infinite)
+                }
+            }
         }
 //        dropDowntextField.filterAction = { [unowned self] text in
 //            if text.isEmpty {

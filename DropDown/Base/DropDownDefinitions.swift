@@ -11,14 +11,7 @@ import UIKit
 // MARK: - Definitions
 public typealias DropDownSelectedItemAction = (DropDownItemable, Int) -> Void
 public typealias DropDownFilterItemAction = (String) -> Void
-
-// MARK: - Constants
-enum DropDownConstants {
-    
-    static let numberOfRowsToDisplay = 3
-    static let imageViewWidth: CGFloat = 40
-    static let defaultHeight: CGFloat =  UITableView.automaticDimension
-}
+public typealias DropDownLoadPageAction = (DropDownTableView) -> Void
 
 public enum DropDownDirection {
     
@@ -33,6 +26,20 @@ public enum DropDownDirection {
     case onTap      // A tap inseide the drop down is needed to dismiss it
     case manual     // The drop down can only be dismissed manually (by code)
     
+}
+
+public enum DropDownLoadingType {
+    
+    case refresh
+    case infinite
+}
+
+// MARK: - Constants
+enum DropDownConstants {
+    
+    static let numberOfRowsToDisplay = 3
+    static let imageViewWidth: CGFloat = 40
+    static let defaultHeight: CGFloat =  UITableView.automaticDimension
 }
 
 // MARK: - DropDownItemable

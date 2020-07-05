@@ -10,6 +10,12 @@ import UIKit
 
 public class DropDownTableView: UIView {
     
+    public struct PagingConfiguration {
+        
+        public var pullToRefreshEnabled: Bool
+        public var infiniteScrollEnabled: Bool
+    }
+    
     // MARK: - Constants
     private let cellIdentifier = "DropDownCellIdentifier"
     
@@ -79,13 +85,24 @@ public class DropDownTableView: UIView {
     public var preferredHeight: CGFloat = DropDownConstants.defaultHeight   // If it is set default. The size will be calculated by RowToDisplay
     public var rowToDisplay: Int = DropDownConstants.numberOfRowsToDisplay  // Helps to calculate the DropDownHeight
     
-    public var selectedItemAction: DropDownSelectedItemAction?
     public var elements: [DropDownItemable] = []
     public var selectedElement: DropDownItemable? {
         didSet {
             whenShowScrollToSelection = oldValue == nil
         }
     }
+    
+    public var paging: PagingConfiguration = PagingConfiguration(pullToRefreshEnabled: false, infiniteScrollEnabled: false) {
+        didSet {
+            registerRefreshControl()
+            registerFooterLoadingView()
+        }
+    }
+    
+    // MARK: - Properties - Actions
+    public var selectedItemAction: DropDownSelectedItemAction?
+    public var loadFirstPageAction: DropDownLoadPageAction?
+    public var loadNextPageAction: DropDownLoadPageAction?
     
     // MARK: - Properties - Private
     private weak var ownerView: UIView?
@@ -140,6 +157,7 @@ fileprivate extension DropDownTableView {
         tableView.clipsToBounds = true
         tableView.allowsSelection = true
         tableView.allowsMultipleSelection = false
+        tableView.prefetchDataSource = self
         tableView.dataSource = self
         tableView.delegate = self
         tableView.layer.maskedCorners = maskedCorners
@@ -151,8 +169,26 @@ fileprivate extension DropDownTableView {
                                      tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)])
         
         tableView.separatorStyle = separatorStyle
-        tableView.tableFooterView = UIView()
         registerReusable(cell: UITableViewCell.self)
+        registerRefreshControl()
+        registerFooterLoadingView()
+    }
+    
+    func registerRefreshControl() {
+        if !paging.pullToRefreshEnabled {
+            tableView.refreshControl = nil
+            return
+        }
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
+    }
+    
+    func registerFooterLoadingView() {
+        if !paging.infiniteScrollEnabled {
+            tableView.tableFooterView = UIView()
+            return
+        }
+        tableView.tableFooterView = LoadingView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
     }
 }
 
@@ -394,4 +430,32 @@ extension DropDownTableView: UIGestureRecognizerDelegate {
         }
         return true
     }
+}
+
+// MARK: - UITableViewDataSourcePrefetching & Paging
+extension DropDownTableView: UITableViewDataSourcePrefetching {
+    
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        if indexPaths.contains(where: { $0.row >= (elements.count - 2) }) {
+            guard let loadingView = tableView.tableFooterView as? LoadingView else { return }
+            loadingView.isHidden = false
+            loadNextPageAction?(self)
+        }
+    }
+    
+    @objc private func refresh(_ sender: UIRefreshControl) {
+        loadFirstPageAction?(self)
+    }
+    
+    public func stopLoading(type: DropDownLoadingType) {
+        switch type {
+        case .refresh:
+            tableView.refreshControl?.endRefreshing()
+            
+        case .infinite:
+            guard let loadingView = tableView.tableFooterView as? LoadingView else { return }
+            loadingView.isHidden = true
+        }
+    }
+    
 }

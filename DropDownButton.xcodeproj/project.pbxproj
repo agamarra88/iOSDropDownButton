@@ -30,6 +30,7 @@
 		6936FF9224AD90D30051AF4A /* UIView+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936FF9124AD90D30051AF4A /* UIView+Helper.swift */; };
 		6936FF9824AE567D0051AF4A /* HighLightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6936FF9724AE567D0051AF4A /* HighLightTableViewCell.swift */; };
 		694A5F5623E009250096C188 /* AppereanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694A5F5523E009250096C188 /* AppereanceManager.swift */; };
+		69820BEE24B046FD004F48F1 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69820BED24B046FD004F48F1 /* LoadingView.swift */; };
 		6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6995021624AB0E78007373F2 /* UIView+UIViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 		694A5F5523E009250096C188 /* AppereanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppereanceManager.swift; sourceTree = "<group>"; };
 		697CA36A23DE6A0F003355F8 /* DropDownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownTableView.swift; sourceTree = "<group>"; };
 		697CA36E23DE6AC7003355F8 /* DropDownDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownDefinitions.swift; sourceTree = "<group>"; };
+		69820BED24B046FD004F48F1 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6995021624AB0E78007373F2 /* UIView+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+UIViewController.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -200,12 +202,21 @@
 		6926F16E24A9618400462DAD /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				69820BEF24B0476E004F48F1 /* Complementary */,
 				690F149923DC7BBD0040E9BA /* DropDownButton.swift */,
 				694A5F5323DFEF110096C188 /* DropDownView.swift */,
 				6936FF9324ADBA2C0051AF4A /* DropDownTextField.swift */,
-				6936FF9724AE567D0051AF4A /* HighLightTableViewCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		69820BEF24B0476E004F48F1 /* Complementary */ = {
+			isa = PBXGroup;
+			children = (
+				6936FF9724AE567D0051AF4A /* HighLightTableViewCell.swift */,
+				69820BED24B046FD004F48F1 /* LoadingView.swift */,
+			);
+			path = Complementary;
 			sourceTree = "<group>";
 		};
 		6995021324AAEEEF007373F2 /* Extensions */ = {
@@ -276,7 +287,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1130;
-				ORGANIZATIONNAME = Vector;
+				ORGANIZATIONNAME = Abstract;
 				TargetAttributes = {
 					690F147F23DC0FD70040E9BA = {
 						CreatedOnToolsVersion = 11.3.1;
@@ -348,6 +359,7 @@
 				6926F16724A9611500462DAD /* DropDownButton.swift in Sources */,
 				6995021724AB0E78007373F2 /* UIView+UIViewController.swift in Sources */,
 				6926F16924A9611500462DAD /* UITapClosureGestureRecognizer.swift in Sources */,
+				69820BEE24B046FD004F48F1 /* LoadingView.swift in Sources */,
 				6926F16624A9611500462DAD /* DropDownViewable.swift in Sources */,
 				692A743F24AEA34D0018E346 /* DropDownTextField.swift in Sources */,
 				6936FF9224AD90D30051AF4A /* UIView+Helper.swift in Sources */,

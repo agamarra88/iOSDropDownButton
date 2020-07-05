@@ -3,10 +3,12 @@
 //  DropDown
 //
 //  Created by Arturo Gamarra on 7/2/20.
-//  Copyright © 2020 Vector. All rights reserved.
+//  Copyright © 2020 Abstract. All rights reserved.
 //
 
 import UIKit
+
+public typealias DropDownTextFieldLoadPageAction = (DropDownTextField, String) -> Void
 
 public protocol DropDownTextFieldDelegate: class {
     
@@ -159,7 +161,18 @@ public extension DropDownTextFieldDelegate {
     private var timer: Timer?
     public weak var filterDelegate: DropDownTextFieldDelegate?
     public var filterAction: DropDownFilterItemAction?
+    public var loadFirstPageAction: DropDownTextFieldLoadPageAction?
+    public var loadNextPageAction: DropDownTextFieldLoadPageAction?
     public var configuration: Configuration = Configuration()
+    
+    public var paging: DropDownTableView.PagingConfiguration {
+        get {
+            dropDownView.paging
+        }
+        set {
+            dropDownView.paging = newValue
+        }
+    }
     
     // MARK: - Constructors
     public override init(frame: CGRect) {
@@ -185,6 +198,15 @@ private extension DropDownTextField {
         dropDownView.registerReusable(cell: HighLightTableViewCell.self)
         addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
         addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
+        
+        dropDownView.loadFirstPageAction = { [unowned self] _ in
+            let text = self.configuration.trim(text: self.text) ?? ""
+            self.loadFirstPageAction?(self, text)
+        }
+        dropDownView.loadNextPageAction = {  [unowned self] _ in
+            let text = self.configuration.trim(text: self.text) ?? ""
+            self.loadNextPageAction?(self, text)
+        }
     }
     
     @objc func editingDidBegin(_ sender: UITextField) {
@@ -233,5 +255,13 @@ private extension DropDownTextField {
     func reloadDropDown(by elements:[DropDownItemable]) {
         self.dropDownView.elements = elements
         self.dropDownView.reload(keepSelection: false)
+    }
+}
+
+// MARK: - Pulbic
+public extension DropDownTextField {
+    
+    func stopLoading(type: DropDownLoadingType) {
+        dropDownView.stopLoading(type: type)
     }
 }

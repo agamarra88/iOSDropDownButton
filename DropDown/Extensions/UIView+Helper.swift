@@ -3,7 +3,7 @@
 //  DropDown
 //
 //  Created by Arturo Gamarra on 7/1/20.
-//  Copyright © 2020 Vector. All rights reserved.
+//  Copyright © 2020 Abstract. All rights reserved.
 //
 
 import UIKit
