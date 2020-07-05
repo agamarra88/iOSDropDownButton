@@ -49,39 +49,11 @@ class ViewController: UIViewController {
         
         let allText =  ["Arturo", "Sebastian", "Gamarra", "Mejia", "Andrea", "Fabiola", "Cano", "Cumpitaz"]
         dropDowntextField.elements = allText
-//        dropDowntextField.dropDownPreferredHeight = 300
         dropDowntextField.placeholder = "Select One"
+//        dropDowntextField.dropDownPreferredHeight = 300
 //        dropDowntextField.configuration.isAutomatic = false
 //        dropDowntextField.configuration.ignoringCase = false
 //        dropDowntextField.configuration.trim = false
-        dropDowntextField.paging.pullToRefreshEnabled = true
-        dropDowntextField.paging.infiniteScrollEnabled = true
-        dropDowntextField.selectedItemAction = { item, _ in
-            
-        }
-        dropDowntextField.loadFirstPageAction = { textField, text in
-            OperationQueue().addOperation {
-                sleep(2)
-                OperationQueue.main.addOperation {
-                    self.dropDowntextField.stopLoading(type: .refresh)
-                }
-            }
-        }
-        dropDowntextField.loadNextPageAction = { textField, text in
-            OperationQueue().addOperation {
-                sleep(2)
-                OperationQueue.main.addOperation {
-                    self.dropDowntextField.stopLoading(type: .infinite)
-                }
-            }
-        }
-//        dropDowntextField.filterAction = { [unowned self] text in
-//            if text.isEmpty {
-//                self.dropDowntextField.elements = allText
-//            } else {
-//                self.dropDowntextField.elements = allText.filter({ $0.lowercased().contains(text) })
-//            }
-//        }
     }
 }
 

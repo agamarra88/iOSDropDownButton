@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Rna-5U-8U0">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -7,7 +7,41 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--AutoComplete-->
+        <scene sceneID="tDF-Gn-OUM">
+            <objects>
+                <viewController id="Swg-AB-nZG" customClass="AutoCompleteTextViewController" customModule="DropDownButton" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Thr-tA-xpn">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UH6-Mn-EHx" customClass="DropDownTextField" customModule="DropDown">
+                                <rect key="frame" x="40" y="74" width="334" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="lT1-Ym-5Fs"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UH6-Mn-EHx" firstAttribute="top" secondItem="j1d-Sb-Oc6" secondAttribute="top" constant="30" id="EEq-6V-ZMI"/>
+                            <constraint firstItem="j1d-Sb-Oc6" firstAttribute="trailing" secondItem="UH6-Mn-EHx" secondAttribute="trailing" constant="40" id="hFV-Wc-aXN"/>
+                            <constraint firstItem="UH6-Mn-EHx" firstAttribute="leading" secondItem="j1d-Sb-Oc6" secondAttribute="leading" constant="40" id="x5p-Li-bdp"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="j1d-Sb-Oc6"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="AutoComplete" id="juM-Dc-da4"/>
+                    <connections>
+                        <outlet property="dropDowntextField" destination="UH6-Mn-EHx" id="gQG-Jh-Vh9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="M9g-Fw-QFc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1958" y="781"/>
+        </scene>
+        <!--Item-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="DropDownButton" customModuleProvider="target" sceneMemberID="viewController">
@@ -16,10 +50,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dUa-9Q-XyV">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NmO-7W-Oun">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1227"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1153.5"/>
                                         <subviews>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dii-eE-ZyB" customClass="DropDownTextField" customModule="DropDown">
                                                 <rect key="frame" x="40" y="20" width="334" height="34"/>
@@ -131,7 +165,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="Dp3-oz-Lmp"/>
                             </scrollView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qc8-3h-bqK">
-                                <rect key="frame" x="0.0" y="712" width="414" height="150"/>
+                                <rect key="frame" x="0.0" y="663" width="414" height="150"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7lz-rL-8Rt" customClass="DropDownButton" customModule="DropDown">
                                         <rect key="frame" x="100" y="20" width="214" height="40"/>
@@ -167,6 +201,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Item" id="tNl-S7-3LL"/>
                     <navigationItem key="navigationItem" id="Usf-0I-xW0"/>
                     <connections>
                         <outlet property="accountLabel" destination="yXu-MZ-iWm" id="xOG-3n-iYP"/>
@@ -178,6 +213,24 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1957.9710144927537" y="137.94642857142856"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="yez-h5-wsy">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="Rna-5U-8U0" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Xag-P0-r1C">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="AST-1F-dVi"/>
+                        <segue destination="Swg-AB-nZG" kind="relationship" relationship="viewControllers" id="DNF-DE-1vQ"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7IP-8M-joJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1047.8260869565217" y="137.94642857142856"/>
         </scene>

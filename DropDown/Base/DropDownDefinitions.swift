@@ -10,8 +10,7 @@ import UIKit
 
 // MARK: - Definitions
 public typealias DropDownSelectedItemAction = (DropDownItemable, Int) -> Void
-public typealias DropDownFilterItemAction = (String) -> Void
-public typealias DropDownLoadPageAction = (DropDownTableView) -> Void
+public typealias DropDownLoadPageAction = (DropDownTableView, Int) -> Void
 
 public enum DropDownDirection {
     

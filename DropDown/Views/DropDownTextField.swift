@@ -8,17 +8,22 @@
 
 import UIKit
 
-public typealias DropDownTextFieldLoadPageAction = (DropDownTextField, String) -> Void
+public typealias DropDownTextFieldLoadPageAction = (DropDownTextField, String, Int) -> Void
+public typealias DropDownTextFieldFilterAction = (String, Int) -> Void
 
 public protocol DropDownTextFieldDelegate: class {
     
-    func dropDown(_ sender:DropDownTextField, filterBy text:String)
+    func dropDown(_ sender:DropDownTextField, filterBy text:String, inPage page: Int)
+    func dropDown(_ sender:DropDownTextField, loadFirstPageFilterBy text:String, inPage page: Int)
+    func dropDown(_ sender:DropDownTextField, loadNextPageFilterBy text:String, inPage page: Int)
     
 }
 
 public extension DropDownTextFieldDelegate {
     
-    func dropDown(_ sender:DropDownTextField, filterBy text:String) { }
+    func dropDown(_ sender:DropDownTextField, filterBy text:String, inPage page: Int) { }
+    func dropDown(_ sender:DropDownTextField, loadFirstPageFilterBy text:String, inPage page: Int) { }
+    func dropDown(_ sender:DropDownTextField, loadNextPageFilterBy text:String, inPage page: Int) { }
     
 }
 
@@ -160,7 +165,7 @@ public extension DropDownTextFieldDelegate {
     // MARK: - Properties
     private var timer: Timer?
     public weak var filterDelegate: DropDownTextFieldDelegate?
-    public var filterAction: DropDownFilterItemAction?
+    public var filterAction: DropDownTextFieldFilterAction?
     public var loadFirstPageAction: DropDownTextFieldLoadPageAction?
     public var loadNextPageAction: DropDownTextFieldLoadPageAction?
     public var configuration: Configuration = Configuration()
@@ -171,6 +176,7 @@ public extension DropDownTextFieldDelegate {
         }
         set {
             dropDownView.paging = newValue
+            configuration.isAutomatic = !dropDownView.paging.enabled // If paging enabled configuration is not automatic
         }
     }
     
@@ -199,13 +205,15 @@ private extension DropDownTextField {
         addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
         addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
         
-        dropDownView.loadFirstPageAction = { [unowned self] _ in
+        dropDownView.loadFirstPageAction = { [unowned self] _, page in
             let text = self.configuration.trim(text: self.text) ?? ""
-            self.loadFirstPageAction?(self, text)
+            self.loadFirstPageAction?(self, text, page)
+            self.filterDelegate?.dropDown(self, loadFirstPageFilterBy: text, inPage: page)
         }
-        dropDownView.loadNextPageAction = {  [unowned self] _ in
+        dropDownView.loadNextPageAction = {  [unowned self] _, page in
             let text = self.configuration.trim(text: self.text) ?? ""
-            self.loadNextPageAction?(self, text)
+            self.loadNextPageAction?(self, text, page)
+            self.filterDelegate?.dropDown(self, loadFirstPageFilterBy: text, inPage: page)
         }
     }
     
@@ -235,8 +243,9 @@ private extension DropDownTextField {
             }
             
             // Call Delegates and Actions
-            self.filterAction?(text)
-            self.filterDelegate?.dropDown(self, filterBy: text)
+            self.dropDownView.paging.page = 1
+            self.filterAction?(text, self.dropDownView.paging.page)
+            self.filterDelegate?.dropDown(self, filterBy: text, inPage: self.dropDownView.paging.page)
         })
     }
     
@@ -261,7 +270,7 @@ private extension DropDownTextField {
 // MARK: - Pulbic
 public extension DropDownTextField {
     
-    func stopLoading(type: DropDownLoadingType) {
+    func stopLoading(type: DropDownLoadingType? = nil) {
         dropDownView.stopLoading(type: type)
     }
 }
