@@ -23,10 +23,7 @@ class AutoCompleteTextViewController: UIViewController {
         dropDowntextField.selectedItemAction = { item, _ in
             
         }
-        dropDowntextField.loadFirstPageAction = { [unowned self] textField, text, page in
-            self.filterMovies(by: text, inPage: page)
-        }
-        dropDowntextField.loadNextPageAction = {  [unowned self] textField, text, page in
+        dropDowntextField.loadPageAction = { [unowned self] textField, text, page in
             self.filterMovies(by: text, inPage: page)
         }
         dropDowntextField.filterAction = { [unowned self] text, page in

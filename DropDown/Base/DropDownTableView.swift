@@ -8,6 +8,28 @@
 
 import UIKit
 
+public protocol DropDownTableViewDelegate: class {
+    
+    func dropDown(_ sender:DropDownTableView, didSelectItem item:DropDownItemable, atIndex index:Int)
+    
+    func dropDown(_ sender:DropDownTableView, willShowWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownTableView, didShowWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownTableView, willDismissWithDirection direction:DropDownDirection)
+    func dropDown(_ sender:DropDownTableView, didDismissWithDirection direction:DropDownDirection)
+    
+    func dropDown(_ sender:DropDownTableView, loadPage page:Int)
+}
+
+public extension DropDownTableViewDelegate {
+    
+    func dropDown(_ sender:DropDownTableView, willShowWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownTableView, didShowWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownTableView, willDismissWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownTableView, didDismissWithDirection direction:DropDownDirection) { }
+    func dropDown(_ sender:DropDownTableView, loadPage page:Int) { }
+    
+}
+
 public class DropDownTableView: UIView {
     
     public struct PagingConfiguration {
@@ -103,9 +125,9 @@ public class DropDownTableView: UIView {
     }
     
     // MARK: - Properties - Actions
+    public weak var delegate: DropDownTableViewDelegate?
     public var selectedItemAction: DropDownSelectedItemAction?
-    public var loadFirstPageAction: DropDownLoadPageAction?
-    public var loadNextPageAction: DropDownLoadPageAction?
+    public var loadPageAction: DropDownLoadPageAction?
     
     // MARK: - Properties - Private
     private weak var ownerView: UIView?
@@ -342,6 +364,7 @@ public extension DropDownTableView {
         }
         
         // Animate and show DropDownView (TableView)
+        delegate?.dropDown(self, willShowWithDirection: direction)
         heightConstraint?.constant = dropDownHeight
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             
@@ -353,7 +376,10 @@ public extension DropDownTableView {
             let factor: CGFloat = self.direction == .down ? 1 : -1
             self.center.y += factor * self.frame.height / 2
             
-            }, completion: completion)
+            }, completion: { done in
+                self.delegate?.dropDown(self, didShowWithDirection: self.direction)
+                completion?(done)
+        })
     }
     
     func dismiss(animations: (() -> Void)? = nil, completion: ((Bool) -> Void)? = nil) {
@@ -361,6 +387,7 @@ public extension DropDownTableView {
         whenShowScrollToSelection = false
         
         // Animate and hide DropDownView (TableView)
+        delegate?.dropDown(self, willDismissWithDirection: direction)
         heightConstraint?.constant = 0
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: { [unowned self] in
             
@@ -372,7 +399,10 @@ public extension DropDownTableView {
             self.center.y -= factor * self.frame.height / 2
             self.layoutIfNeeded()
             
-            }, completion: completion)
+            }, completion: { done in
+                self.delegate?.dropDown(self, didDismissWithDirection: self.direction)
+                completion?(done)
+        })
     }
 }
 
@@ -402,8 +432,8 @@ extension DropDownTableView: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedElement = elements[indexPath.row]
         selectedItemAction?(selectedElement!, indexPath.row)
+        delegate?.dropDown(self, didSelectItem: selectedElement!, atIndex: indexPath.row)
     }
-    
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -446,13 +476,15 @@ extension DropDownTableView: UITableViewDataSourcePrefetching {
             guard let loadingView = tableView.tableFooterView as? LoadingView else { return }
             loadingView.isHidden = false
             paging.page += 1
-            loadNextPageAction?(self, paging.page)
+            loadPageAction?(self, paging.page)
+            delegate?.dropDown(self, loadPage: paging.page)
         }
     }
     
     @objc private func refresh(_ sender: UIRefreshControl) {
         paging.page = 1
-        loadFirstPageAction?(self, paging.page)
+        loadPageAction?(self, paging.page)
+        delegate?.dropDown(self, loadPage: paging.page)
     }
     
     public func stopLoading(type: DropDownLoadingType? = nil) {

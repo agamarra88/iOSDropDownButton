@@ -21,7 +21,7 @@ struct MovieService: RestAPI {
         if !text.isEmpty {
             url += "&query=\(text)"
         }
-        print(url)
+        url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? url
         callService(atUrl: url, verb: "GET", completion: completion)
     }
     

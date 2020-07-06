@@ -166,8 +166,7 @@ public extension DropDownTextFieldDelegate {
     private var timer: Timer?
     public weak var filterDelegate: DropDownTextFieldDelegate?
     public var filterAction: DropDownTextFieldFilterAction?
-    public var loadFirstPageAction: DropDownTextFieldLoadPageAction?
-    public var loadNextPageAction: DropDownTextFieldLoadPageAction?
+    public var loadPageAction: DropDownTextFieldLoadPageAction?
     public var configuration: Configuration = Configuration()
     
     public var paging: DropDownTableView.PagingConfiguration {
@@ -205,14 +204,9 @@ private extension DropDownTextField {
         addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
         addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
         
-        dropDownView.loadFirstPageAction = { [unowned self] _, page in
+        dropDownView.loadPageAction = {  [unowned self] _, page in
             let text = self.configuration.trim(text: self.text) ?? ""
-            self.loadFirstPageAction?(self, text, page)
-            self.filterDelegate?.dropDown(self, loadFirstPageFilterBy: text, inPage: page)
-        }
-        dropDownView.loadNextPageAction = {  [unowned self] _, page in
-            let text = self.configuration.trim(text: self.text) ?? ""
-            self.loadNextPageAction?(self, text, page)
+            self.loadPageAction?(self, text, page)
             self.filterDelegate?.dropDown(self, loadFirstPageFilterBy: text, inPage: page)
         }
     }
@@ -267,7 +261,7 @@ private extension DropDownTextField {
     }
 }
 
-// MARK: - Pulbic
+// MARK: - Public
 public extension DropDownTextField {
     
     func stopLoading(type: DropDownLoadingType? = nil) {
